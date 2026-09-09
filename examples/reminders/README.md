@@ -1,53 +1,13 @@
-# Reminders
+# Daily Reminders
 
-Personal reminder system with notifications and alerts for WebScreen.
+Four daily reminders driven by the firmware NTP clock.
 
-## Features
+## Usage
 
-- Daily reminder list
-- Time-based scheduling
-- Priority levels (high/medium/low)
-- Category tags (work/health/personal)
-- Progress tracking (pending/done)
-- Visual status indicators
+Configure Wi-Fi and the local timezone. Due reminders display `[!]`; press the hardware button to acknowledge the earliest due, unfinished item. Acknowledged items show `[X]`.
 
-## Display
+## Behavior and Limits
 
-- Shows 4 reminders at a time
-- Auto-scrolls through list
-- Color-coded priority borders:
-  - Red: High priority
-  - Orange: Medium priority
-  - Green: Low priority
-- Time badges turn red when due/overdue
+Items reset each local day. Passing the due time does not automatically mark work complete. Edit the four reminder labels and their matching HHMM thresholds in the script together. Without synchronized time, the app shows a waiting status.
 
-## Demo Mode
-
-The app runs in demo mode with simulated reminders and auto-advancing time to show how reminders are completed throughout the day.
-
-## Customization
-
-Edit the `reminders` array to add your tasks:
-
-```javascript
-let reminders = [
-    {
-        text: "Task description",
-        time: "09:00",
-        category: "work",    // "work", "health", "personal"
-        done: false,
-        priority: "high"     // "high", "medium", "low"
-    }
-];
-```
-
-## Data Storage
-
-Place a `reminders.json` file on your SD card to load custom reminders at startup.
-
-## Future Enhancements
-
-- Sync with calendar services
-- Recurring reminders
-- Voice/sound alerts
-- Touch to mark complete
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

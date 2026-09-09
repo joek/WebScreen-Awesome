@@ -1,10 +1,12 @@
 {
   "name": "Time API",
-  "version": "1.0.0",
-  "description": "Display current time using NTP with animated GIF",
+  "version": "1.1.0",
+  "description": "Display local firmware NTP time in 12-hour format",
   "author": "WebScreen",
   "script": "script.js",
-  "assets": ["cat.gif", "timeapi.pem"],
+  "assets": [
+    "cat.gif"
+  ],
   "settings": {
     "wifi": {
       "ssid": "ssid",

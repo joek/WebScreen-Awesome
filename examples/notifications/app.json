@@ -1,7 +1,7 @@
 {
   "name": "Notifications",
-  "version": "1.0.0",
-  "description": "Display notifications and alerts from various sources",
+  "version": "1.1.0",
+  "description": "Offline notification display with five retained entries, newest first",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

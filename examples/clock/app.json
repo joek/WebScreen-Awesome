@@ -1,10 +1,10 @@
 {
   "name": "Clock",
-  "version": "1.0.0",
-  "description": "Digital clock with NTP time synchronization",
+  "version": "1.1.0",
+  "description": "NTP clock in 12-hour format with seconds and AM/PM",
   "author": "WebScreen",
   "script": "script.js",
-  "assets": ["clock.pem"],
+  "assets": [],
   "settings": {
     "wifi": {
       "ssid": "your_ssid",

@@ -10,7 +10,7 @@ Display real-time notifications on your WebScreen from any MQTT-enabled device o
 
 ## Requirements
 
-- WebScreen with firmware **v68.1.6** or later (MQTT support required)
+- WebScreen with current firmware with the MQTT queue and string helper APIs
 - WiFi network accessible from the WebScreen
 - An MQTT broker (local or public)
 - `mosquitto-clients` package on your computer for sending notifications
@@ -55,7 +55,9 @@ The app reads MQTT settings as top-level keys from `webscreen.json`:
 | `mqtt_broker` | `broker.hivemq.com` | MQTT broker hostname or IP |
 | `mqtt_port` | `1883` | MQTT broker port |
 | `mqtt_topic` | `webscreen/notifications` | Topic to subscribe to |
-| `mqtt_client_id` | `webscreen01` | Client ID for the connection |
+| `mqtt_client_id` | generated per app load | Optional client ID; use a unique value per device |
+| `mqtt_username` | empty | Optional broker username (up to 63 bytes) |
+| `mqtt_password` | empty | Optional broker password (up to 63 bytes) |
 
 MQTT must also be enabled in the `settings.mqtt` section.
 
@@ -255,7 +257,9 @@ mosquitto_pub -h 192.168.1.100 -t "webscreen/notifications" \
 
 - Stores the last 5 notifications with auto-pagination
 - Auto-cycles through notifications every 6 seconds
-- Shows connection status (Connecting / Connected / MQTT failed)
+- Shows subscription status and automatically retries failed connections
+- Hardware button advances to the next retained notification
+- Drains up to four queued messages per tick; limits displayed title/body/source lengths
 - Accepts JSON messages with `title`, `message`, and `source` fields
 - Falls back to plain text display for non-JSON messages
 - Dark theme UI with card-based notification display
@@ -280,7 +284,7 @@ Public brokers are shared by everyone. If you use a common topic like `webscreen
 | `rc=-2` | TCP connection refused. The broker rejected the connection or port 1883 is blocked by your network/ISP. |
 | `rc=-4` | Connection timeout. The broker is unreachable or too slow. |
 
-Public brokers can be overloaded or temporarily down. The WebScreen will show "MQTT failed" on screen if the initial connection fails. A reboot is required to retry.
+Public brokers can be overloaded or temporarily down. The WebScreen will show "MQTT failed" on screen if the initial connection fails. The app retries initial connection/subscription failures every 15 seconds and resumes after Wi-Fi returns. The firmware maintains established sessions and restores subscriptions after a broker drop.
 
 **Fix:** Use a local Mosquitto broker for consistent connectivity.
 
@@ -349,3 +353,7 @@ Normal successful flow:
 [MQTT] Message ready for JS (58 bytes)
 Notification: Hello - Local broker works!
 ```
+
+## Elk Runtime
+
+Messages are polled from the firmware queue. `mqtt_on_message()` does not invoke a JavaScript callback. Five retained notifications use fixed slots so commas cannot corrupt history. Bodies are limited to 180 bytes for the display; the firmware MQTT packet limit also applies. See [Elk app development](../../docs/ELK_APPS.md).

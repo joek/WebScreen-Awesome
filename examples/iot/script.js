@@ -49,7 +49,7 @@ style_set_bg_color(cardStyle, COLOR_CARD);
 style_set_bg_opa(cardStyle, 255);
 style_set_radius(cardStyle, 10);
 style_set_width(cardStyle, 165);
-style_set_height(cardStyle, 85);
+style_set_height(cardStyle, 80);
 
 // Header - display is 536x240
 let titleLabel = create_label(15, 10);
@@ -129,16 +129,13 @@ label_set_text(name6, "Kitchen Light");
 let value6 = create_label(370, 165);
 obj_add_style(value6, valueStyle, 0);
 
-let statusLabel = create_label(15, 228);
+let statusLabel = create_label(15, 221);
 obj_add_style(statusLabel, statusStyle, 0);
-label_set_text(statusLabel, "Last update: just now");
+label_set_text(statusLabel, "Sample sensors - press to toggle light");
 
 // Format temperature
 let formatTemp = function(tenths) {
-    let whole = tenths / 10;
-    whole = whole - (whole % 1);
-    let decimal = tenths % 10;
-    return numberToString(whole) + "." + numberToString(decimal) + "C";
+  return format_number(tenths / 10, 1) + "C";
 };
 
 // Update display
@@ -175,12 +172,12 @@ let simulate_tick = function() {
     // Vary temperature
     if (simTimer % 5 === 0) {
         temp1 = temp1 + ((simTimer % 3) - 1);
-        temp2 = temp2 + ((simTimer % 2) - 1);
+        temp2 = 208 + ((simTimer % 7) - 3);
     }
 
     // Vary humidity
     if (simTimer % 7 === 0) {
-        humidity = humidity + ((simTimer % 3) - 1);
+        humidity = 45 + ((simTimer % 11) - 5);
     }
 
     // Toggle motion occasionally
@@ -188,10 +185,7 @@ let simulate_tick = function() {
         motion = 1 - motion;
     }
 
-    // Toggle light
-    if (simTimer % 20 === 0) {
-        light = 1 - light;
-    }
+    // The hardware button controls the demo light.
 
     updateDisplay();
 };
@@ -201,3 +195,9 @@ updateDisplay();
 print("IoT Monitor ready!");
 
 create_timer("simulate_tick", 1000);
+
+let toggle_light = function(event) {
+  light = 1 - light;
+  updateDisplay();
+};
+on_button("toggle_light");

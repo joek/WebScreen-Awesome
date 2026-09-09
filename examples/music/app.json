@@ -1,7 +1,7 @@
 {
   "name": "Music Player",
-  "version": "1.0.0",
-  "description": "Music player interface with playback controls",
+  "version": "1.1.0",
+  "description": "Offline player interface with a five-track sample playlist and elapsed-time progress bar",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

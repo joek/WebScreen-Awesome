@@ -1,7 +1,7 @@
 {
   "name": "Social Stats",
-  "version": "1.0.0",
-  "description": "Display social media statistics and follower counts",
+  "version": "1.1.0",
+  "description": "Offline rotating feed with six sample posts, usernames, avatars, and engagement counts",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

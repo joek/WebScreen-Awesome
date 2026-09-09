@@ -1,27 +1,13 @@
 # Teleprompter
 
-A scrolling text display app for presentations and speeches on WebScreen.
-
-## Features
-
-- Smooth auto-scrolling text
-- Adjustable scroll speed
-- Progress indicator
-- Load custom text from SD card
-- Pause/resume functionality
+Scroll text loaded from `/speech.txt` on the SD card. If the file is absent or empty, a built-in introduction is displayed.
 
 ## Usage
 
-1. Copy your speech text to `/speech.txt` on the SD card
-2. The app will automatically load and display your text
-3. Text scrolls automatically from bottom to top
+Use plain text, preferably ASCII, with line breaks for paragraphs. Press the hardware button to pause/resume. Text wraps at spaces where possible and loops after the final line.
 
-## Customization
+## Behavior and Limits
 
-- **Scroll Speed**: Adjustable from 1-10 pixels per update
-- **Text File**: Place your text in `/speech.txt` on SD card
-- **Font Size**: Uses large 28pt font for readability
+Five reusable rows avoid the firmware limit of 255 bytes per label. The app retains the first 32 KB of the file and shows a notice if truncated. Scrolling runs at 40 pixels/second and pauses during long system stalls so unread text is not skipped.
 
-## File Format
-
-The speech.txt file should be plain text with line breaks for paragraphs.
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

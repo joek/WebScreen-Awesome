@@ -1,7 +1,7 @@
 {
   "name": "SD Reader",
-  "version": "1.0.0",
-  "description": "Browse and display files from SD card",
+  "version": "1.1.0",
+  "description": "Browse the SD card root directory on screen without waiting for Wi-Fi",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

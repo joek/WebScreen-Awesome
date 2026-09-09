@@ -1,313 +1,132 @@
 "use strict";
-
-print("Starting Calculator...");
-
-// Calculator state
 let display = "0";
 let operand1 = 0;
-let operand2 = 0;
 let operation = "";
-let waitingForOperand = 0;
+let waitingForOperand = 1;
+let demoMode = 1;
 let demoStep = 0;
-
-// Create styles
+let currentCalc = 0;
+let demoCalcs = "12+5,25x4,100-37,84/4,15+27,50x2,99-11,144/12";
 let displayStyle = create_style();
-style_set_text_font(displayStyle, 48);
+style_set_text_font(displayStyle, 34);
 style_set_text_color(displayStyle, 0xFFFFFF);
-style_set_text_align(displayStyle, 2);
-
-let opDisplayStyle = create_style();
-style_set_text_font(opDisplayStyle, 20);
-style_set_text_color(opDisplayStyle, 0x888888);
-style_set_text_align(opDisplayStyle, 2);
-
+style_set_text_align(displayStyle, 3);
+style_set_width(displayStyle, 210);
+let smallStyle = create_style();
+style_set_text_font(smallStyle, 14);
+style_set_text_color(smallStyle, 0x58A6FF);
+style_set_width(smallStyle, 210);
 let buttonStyle = create_style();
-style_set_text_font(buttonStyle, 28);
+style_set_text_font(buttonStyle, 20);
 style_set_text_color(buttonStyle, 0xFFFFFF);
-style_set_text_align(buttonStyle, 1);
+style_set_text_align(buttonStyle, 2);
 style_set_bg_color(buttonStyle, 0x333344);
 style_set_bg_opa(buttonStyle, 255);
+style_set_radius(buttonStyle, 6);
 style_set_width(buttonStyle, 60);
-style_set_height(buttonStyle, 40);
-style_set_radius(buttonStyle, 8);
-
-let opButtonStyle = create_style();
-style_set_text_font(opButtonStyle, 28);
-style_set_text_color(opButtonStyle, 0xFFFFFF);
-style_set_text_align(opButtonStyle, 1);
-style_set_bg_color(opButtonStyle, 0x0066AA);
-style_set_bg_opa(opButtonStyle, 255);
-style_set_width(opButtonStyle, 60);
-style_set_height(opButtonStyle, 40);
-style_set_radius(opButtonStyle, 8);
-
-let eqButtonStyle = create_style();
-style_set_text_font(eqButtonStyle, 28);
-style_set_text_color(eqButtonStyle, 0xFFFFFF);
-style_set_text_align(eqButtonStyle, 1);
-style_set_bg_color(eqButtonStyle, 0x00AA44);
-style_set_bg_opa(eqButtonStyle, 255);
-style_set_width(eqButtonStyle, 60);
-style_set_height(eqButtonStyle, 40);
-style_set_radius(eqButtonStyle, 8);
-
-let clearButtonStyle = create_style();
-style_set_text_font(clearButtonStyle, 28);
-style_set_text_color(clearButtonStyle, 0xFFFFFF);
-style_set_text_align(clearButtonStyle, 1);
-style_set_bg_color(clearButtonStyle, 0xAA3333);
-style_set_bg_opa(clearButtonStyle, 255);
-style_set_width(clearButtonStyle, 60);
-style_set_height(clearButtonStyle, 40);
-style_set_radius(clearButtonStyle, 8);
-
-let activeButtonStyle = create_style();
-style_set_text_font(activeButtonStyle, 28);
-style_set_text_color(activeButtonStyle, 0x000000);
-style_set_text_align(activeButtonStyle, 1);
-style_set_bg_color(activeButtonStyle, 0x00BFFF);
-style_set_bg_opa(activeButtonStyle, 255);
-style_set_width(activeButtonStyle, 60);
-style_set_height(activeButtonStyle, 40);
-style_set_radius(activeButtonStyle, 8);
-
-// Display area background
-let displayBg = create_label(168, 15);
-let displayBgStyle = create_style();
-style_set_bg_color(displayBgStyle, 0x1a1a2e);
-style_set_bg_opa(displayBgStyle, 255);
-style_set_width(displayBgStyle, 200);
-style_set_height(displayBgStyle, 70);
-style_set_radius(displayBgStyle, 10);
-obj_add_style(displayBg, displayBgStyle, 0);
-label_set_text(displayBg, "");
-
-// Operation display (shows pending operation)
-let opDisplay = create_label(355, 20);
-obj_add_style(opDisplay, opDisplayStyle, 0);
-label_set_text(opDisplay, "");
-
-// Main display
-let mainDisplay = create_label(355, 40);
+style_set_height(buttonStyle, 36);
+let opStyle = create_style();
+style_set_bg_color(opStyle, 0x0066AA);
+let mainDisplay = create_label(15, 65);
 obj_add_style(mainDisplay, displayStyle, 0);
-label_set_text(mainDisplay, "0");
-
-// Button layout - 4x5 grid starting at x=168, y=95
-// Row 1: C, +/-, %, /
-// Row 2: 7, 8, 9, x
-// Row 3: 4, 5, 6, -
-// Row 4: 1, 2, 3, +
-// Row 5: 0, ., =
-
-let btnC = create_label(178, 95);
-obj_add_style(btnC, clearButtonStyle, 0);
-label_set_text(btnC, "C");
-
-let btnSign = create_label(248, 95);
-obj_add_style(btnSign, buttonStyle, 0);
-label_set_text(btnSign, "+/-");
-
-let btnPct = create_label(318, 95);
-obj_add_style(btnPct, buttonStyle, 0);
-label_set_text(btnPct, "%");
-
-let btnDiv = create_label(388, 95);
-obj_add_style(btnDiv, opButtonStyle, 0);
-label_set_text(btnDiv, "/");
-
-// Row 2
-let btn7 = create_label(178, 140);
-obj_add_style(btn7, buttonStyle, 0);
-label_set_text(btn7, "7");
-
-let btn8 = create_label(248, 140);
-obj_add_style(btn8, buttonStyle, 0);
-label_set_text(btn8, "8");
-
-let btn9 = create_label(318, 140);
-obj_add_style(btn9, buttonStyle, 0);
-label_set_text(btn9, "9");
-
-let btnMul = create_label(388, 140);
-obj_add_style(btnMul, opButtonStyle, 0);
-label_set_text(btnMul, "x");
-
-// Row 3
-let btn4 = create_label(178, 185);
-obj_add_style(btn4, buttonStyle, 0);
-label_set_text(btn4, "4");
-
-let btn5 = create_label(248, 185);
-obj_add_style(btn5, buttonStyle, 0);
-label_set_text(btn5, "5");
-
-let btn6 = create_label(318, 185);
-obj_add_style(btn6, buttonStyle, 0);
-label_set_text(btn6, "6");
-
-let btnSub = create_label(388, 185);
-obj_add_style(btnSub, opButtonStyle, 0);
-label_set_text(btnSub, "-");
-
-// Demo status
-let demoLabel = create_label(30, 200);
-let demoStyle = create_style();
-style_set_text_font(demoStyle, 14);
-style_set_text_color(demoStyle, 0x666666);
-style_set_text_align(demoStyle, 0);
-obj_add_style(demoLabel, demoStyle, 0);
-label_set_text(demoLabel, "Demo Mode");
-
-// Row 4 (partial - showing for visual completeness)
-let btn1 = create_label(178, 230);
-let smallBtnStyle = create_style();
-style_set_text_font(smallBtnStyle, 20);
-style_set_text_color(smallBtnStyle, 0x888888);
-style_set_text_align(smallBtnStyle, 0);
-obj_add_style(btn1, smallBtnStyle, 0);
-label_set_text(btn1, "1  2  3  +  0  .  =");
-
-// Demo calculations
-let demoCalcs = "12+5,25x4,100-37,84/4,15+27,50x2,99-11,144/12";
-let demoResults = "17,100,63,21,42,100,88,12";
-let currentCalc = 0;
-
-// Get value from comma-separated string
-let getItem = function(str, idx) {
-  let len = str_length(str);
-  let pos = 0;
-  let count = 0;
-  let start = 0;
-  while (pos <= len) {
-    let c = "";
-    if (pos < len) {
-      c = str_substring(str, pos, 1);
-    }
-    if (c === "," || pos === len) {
-      if (count === idx) {
-        return str_substring(str, start, pos - start);
-      }
-      count++;
-      start = pos + 1;
-    }
-    pos++;
-  }
-  return "";
-};
-
-// Update display
-let updateDisplay = function() {
+let opDisplay = create_label(15, 40);
+obj_add_style(opDisplay, smallStyle, 0);
+let status = create_label(15, 130);
+obj_add_style(status, smallStyle, 0);
+label_set_text(status, 'Demo - press to pause\nSerial: key("7");');
+let keys = "C,+/-,%,/,7,8,9,x,4,5,6,-,1,2,3,+,0,.,=,C";
+for (let i = 0; i < 20; i++) {
+  let row = (i - i % 4) / 4;
+  let button = create_label(248 + (i % 4) * 68, 12 + row * 44);
+  obj_add_style(button, buttonStyle, 0);
+  if (i % 4 === 3) obj_add_style(button, opStyle, 0);
+  label_set_text(button, str_split(keys, ",", i));
+}
+let render = function() {
   label_set_text(mainDisplay, display);
+  let pending = "";
+  if (operation !== "") pending = numberToString(operand1) + " " + operation;
+  label_set_text(opDisplay, pending);
 };
-
-// Perform calculation
-let calculate = function() {
-  let result = 0;
-  if (operation === "+") {
-    result = operand1 + operand2;
-  } else if (operation === "-") {
-    result = operand1 - operand2;
-  } else if (operation === "x") {
-    result = operand1 * operand2;
-  } else if (operation === "/") {
-    if (operand2 !== 0) {
-      result = operand1 / operand2;
-    } else {
-      display = "Error";
-      updateDisplay();
-      return;
-    }
-  }
-  // Round to avoid floating point issues
-  result = result - (result % 0.0001);
-  display = numberToString(result);
-  operand1 = result;
+let clear = function() {
+  display = "0";
+  operand1 = 0;
   operation = "";
-  updateDisplay();
+  waitingForOperand = 1;
 };
-
-// Demo step function
-let demo_step = function() {
+let calculate = function(value) {
+  let result = value;
+  if (operation === "+") result = operand1 + value;
+  if (operation === "-") result = operand1 - value;
+  if (operation === "x") result = operand1 * value;
+  if (operation === "/") {
+    if (!value) {
+      clear();
+      display = "Error";
+      return 0;
+    }
+    result = operand1 / value;
+  }
+  if (result > 999999999 || result < -999999999) {
+    clear();
+    display = "Overflow";
+    return 0;
+  }
+  // Native fixed formatting avoids floating-point remainder rounding.
+  display = numberToString(toNumber(format_number(result, 4)));
+  operand1 = toNumber(display);
+  operation = "";
+  waitingForOperand = 1;
+};
+let input = function(value) {
+  if (value === "C") {
+    clear();
+  } else if (value === "+/-") {
+    display = numberToString(0 - toNumber(display));
+  } else if (value === "%") {
+    display = numberToString(toNumber(display) / 100);
+  } else if (value === "=" || value === "+" || value === "-" || value === "x" || value === "/") {
+    if (operation !== "" && !waitingForOperand) calculate(toNumber(display));
+    if (display !== "Error" && display !== "Overflow" && value !== "=") {
+      operand1 = toNumber(display);
+      operation = value;
+    }
+    waitingForOperand = 1;
+  } else if (value === ".") {
+    if (waitingForOperand) display = "0";
+    waitingForOperand = 0;
+    if (str_index_of(display, ".") < 0) display = display + ".";
+  } else if (str_length(value) === 1 && str_index_of("0123456789", value) >= 0) {
+    if (waitingForOperand || display === "0") display = "";
+    waitingForOperand = 0;
+    if (str_length(display) < 9) display = display + value;
+  }
+  render();
+};
+// Call /eval key("7"); in the serial console. Screen keys are labels, not touch inputs.
+let key = function(value) {
+  demoMode = 0;
+  label_set_text(status, 'Manual: /eval key("7");\nPress: resume demo');
+  input(value);
+};
+let demo_tick = function() {
+  if (!demoMode) return 0;
+  let expression = str_split(demoCalcs, ",", currentCalc);
+  if (demoStep === 0) clear();
+  let length = str_length(expression);
+  if (demoStep < length) input(str_substring(expression, demoStep, 1));
+  if (demoStep === length) input("=");
   demoStep++;
-
-  if (demoStep === 1) {
-    // Clear
-    display = "0";
-    operand1 = 0;
-    operand2 = 0;
-    operation = "";
-    label_set_text(opDisplay, "");
-    updateDisplay();
-  } else if (demoStep === 2) {
-    // Get next calculation
-    let calc = getItem(demoCalcs, currentCalc);
-
-    // Find operator position
-    let opPos = 0;
-    let op = "";
-    let i = 0;
-    for (;;) {
-      if (i >= 10) break;
-      let c = str_substring(calc, i, 1);
-      if (c === "+" || c === "-" || c === "x" || c === "/") {
-        opPos = i;
-        op = c;
-        break;
-      }
-      i++;
-    }
-
-    // Parse first number
-    let num1Str = str_substring(calc, 0, opPos);
-    operand1 = toNumber(num1Str);
-    display = num1Str;
-    updateDisplay();
-  } else if (demoStep === 3) {
-    // Get operation
-    let calc = getItem(demoCalcs, currentCalc);
-    let i = 0;
-    for (;;) {
-      if (i >= 10) break;
-      let c = str_substring(calc, i, 1);
-      if (c === "+" || c === "-" || c === "x" || c === "/") {
-        operation = c;
-        label_set_text(opDisplay, display + " " + c);
-        break;
-      }
-      i++;
-    }
-  } else if (demoStep === 4) {
-    // Parse second number
-    let calc = getItem(demoCalcs, currentCalc);
-    let opPos = 0;
-    let i = 0;
-    for (;;) {
-      if (i >= 10) break;
-      let c = str_substring(calc, i, 1);
-      if (c === "+" || c === "-" || c === "x" || c === "/") {
-        opPos = i;
-        break;
-      }
-      i++;
-    }
-    let num2Str = str_substring(calc, opPos + 1, 10);
-    operand2 = toNumber(num2Str);
-    display = num2Str;
-    updateDisplay();
-  } else if (demoStep === 5) {
-    // Calculate result
-    calculate();
-    label_set_text(opDisplay, "");
-    print("Calculation: " + getItem(demoCalcs, currentCalc) + " = " + display);
-  } else if (demoStep >= 8) {
-    // Move to next calculation
+  if (demoStep > length + 3) {
     demoStep = 0;
-    currentCalc++;
-    if (currentCalc > 7) currentCalc = 0;
+    currentCalc = (currentCalc + 1) % 8;
   }
 };
-
-// Start demo timer (step every 1 second)
-create_timer("demo_step", 1000);
-
-print("Calculator ready!");
+let toggle_demo = function(event) {
+  demoMode = 1 - demoMode;
+  demoStep = 0;
+  label_set_text(status, demoMode ? "Demo - press to pause" : "Paused - use /eval key()");
+};
+render();
+on_button("toggle_demo");
+create_timer("demo_tick", 1000);

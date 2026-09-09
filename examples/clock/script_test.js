@@ -1,21 +1,14 @@
 "use strict";
-
-print("Test script starting...");
-
-// Just wait for WiFi
-for (;;) {
-  if (wifi_status()) break;
-  delay(500);
-}
-print("WiFi connected!");
-
-// Create a simple label
+// Offline-friendly display and connectivity check.
 let style = create_style();
-style_set_text_font(style, 48);
+style_set_text_font(style, 28);
 style_set_text_color(style, 0xFFFFFF);
-
-let label = create_label(200, 100);
+style_set_width(style, 500);
+style_set_text_align(style, 2);
+let label = create_label(18, 90);
 obj_add_style(label, style, 0);
-label_set_text(label, "Test OK");
-
-print("Test complete - no timer");
+let check_status = function() {
+  label_set_text(label, wifi_status() ? "WiFi OK: " + wifi_get_ip() : "Display OK - waiting for WiFi");
+};
+check_status();
+create_timer("check_status", 2000);

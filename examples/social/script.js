@@ -14,81 +14,65 @@ let likes = "142,89,256,312,178,423";
 let comments = "23,12,45,67,34,89";
 
 // Get value from comma-separated string
-let getItem = function(str, idx) {
-  let len = str_length(str);
-  let pos = 0;
-  let count = 0;
-  let start = 0;
-  while (pos <= len) {
-    let c = "";
-    if (pos < len) {
-      c = str_substring(str, pos, 1);
-    }
-    if (c === "," || pos === len) {
-      if (count === idx) {
-        return str_substring(str, start, pos - start);
-      }
-      count++;
-      start = pos + 1;
-    }
-    pos++;
-  }
-  return "";
+let getItem = function(text, index) {
+  let field = str_split(text, ",", index);
+  if (typeof field !== "string") return "";
+  return field;
 };
 
 // Create styles
 let headerStyle = create_style();
 style_set_text_font(headerStyle, 20);
 style_set_text_color(headerStyle, 0xFFFFFF);
-style_set_text_align(headerStyle, 0);
+style_set_text_align(headerStyle, 1);
 
 let usernameStyle = create_style();
 style_set_text_font(usernameStyle, 20);
 style_set_text_color(usernameStyle, 0x00BFFF);
-style_set_text_align(usernameStyle, 0);
+style_set_text_align(usernameStyle, 1);
 
 let timeStyle = create_style();
 style_set_text_font(timeStyle, 14);
 style_set_text_color(timeStyle, 0x666666);
-style_set_text_align(timeStyle, 0);
+style_set_text_align(timeStyle, 1);
 
 let postStyle = create_style();
 style_set_text_font(postStyle, 20);
 style_set_text_color(postStyle, 0xFFFFFF);
-style_set_text_align(postStyle, 0);
+style_set_text_align(postStyle, 1);
 
 let statsStyle = create_style();
 style_set_text_font(statsStyle, 14);
 style_set_text_color(statsStyle, 0x888888);
-style_set_text_align(statsStyle, 0);
+style_set_text_align(statsStyle, 1);
 
 let navStyle = create_style();
 style_set_text_font(navStyle, 28);
 style_set_text_color(navStyle, 0x444444);
-style_set_text_align(navStyle, 1);
+style_set_text_align(navStyle, 2);
 
 let activeNavStyle = create_style();
 style_set_text_font(activeNavStyle, 28);
 style_set_text_color(activeNavStyle, 0x00BFFF);
-style_set_text_align(activeNavStyle, 1);
+style_set_text_align(activeNavStyle, 2);
 
 let counterStyle = create_style();
 style_set_text_font(counterStyle, 14);
 style_set_text_color(counterStyle, 0x666666);
-style_set_text_align(counterStyle, 1);
+style_set_text_align(counterStyle, 2);
 
 // Header
 let headerLabel = create_label(20, 12);
 obj_add_style(headerLabel, headerStyle, 0);
-label_set_text(headerLabel, "Social Feed");
+label_set_text(headerLabel, "Social Feed - Demo");
 
 let refreshLabel = create_label(480, 12);
 let refreshStyle = create_style();
 style_set_text_font(refreshStyle, 14);
 style_set_text_color(refreshStyle, 0x00BFFF);
-style_set_text_align(refreshStyle, 2);
+style_set_text_align(refreshStyle, 3);
 obj_add_style(refreshLabel, refreshStyle, 0);
-label_set_text(refreshLabel, "Refresh");
+label_set_text(refreshLabel, "Demo");
 
 // Divider line
 let divider = create_label(20, 38);
@@ -116,7 +100,7 @@ let avatarText = create_label(40, 65);
 let avatarTextStyle = create_style();
 style_set_text_font(avatarTextStyle, 20);
 style_set_text_color(avatarTextStyle, 0xFFFFFF);
-style_set_text_align(avatarTextStyle, 1);
+style_set_text_align(avatarTextStyle, 2);
 obj_add_style(avatarText, avatarTextStyle, 0);
 label_set_text(avatarText, "T");
 
@@ -149,12 +133,12 @@ obj_add_style(commentsLabel, statsStyle, 0);
 label_set_text(commentsLabel, "");
 
 // Navigation dots
-let dot0 = create_label(238, 200);
-let dot1 = create_label(258, 200);
-let dot2 = create_label(278, 200);
-let dot3 = create_label(298, 200);
-let dot4 = create_label(318, 200);
-let dot5 = create_label(338, 200);
+let dot0 = create_label(218, 182);
+let dot1 = create_label(238, 182);
+let dot2 = create_label(258, 182);
+let dot3 = create_label(278, 182);
+let dot4 = create_label(298, 182);
+let dot5 = create_label(318, 182);
 
 obj_add_style(dot0, activeNavStyle, 0); label_set_text(dot0, "o");
 obj_add_style(dot1, navStyle, 0); label_set_text(dot1, "o");
@@ -164,7 +148,8 @@ obj_add_style(dot4, navStyle, 0); label_set_text(dot4, "o");
 obj_add_style(dot5, navStyle, 0); label_set_text(dot5, "o");
 
 // Post counter
-let counterLabel = create_label(268, 220);
+style_set_width(counterStyle, 100);
+let counterLabel = create_label(218, 220);
 obj_add_style(counterLabel, counterStyle, 0);
 label_set_text(counterLabel, "1 of 6");
 
@@ -175,23 +160,24 @@ let splitPost = function(text) {
   if (len <= 45) {
     label_set_text(postLine1, text);
     label_set_text(postLine2, "");
-    return;
+    return 0;
   }
 
   // Find space near position 45
   let splitPos = 45;
   let i = 45;
-  while (i >= 30) {
+  for (; i >= 30; i--) {
     let c = str_substring(text, i, 1);
     if (c === " ") {
       splitPos = i;
       break;
     }
-    i--;
   }
 
   let line1 = str_substring(text, 0, splitPos);
-  let line2 = str_substring(text, splitPos + 1, 100);
+  let nextPos = splitPos;
+  if (str_substring(text, splitPos, 1) === " ") nextPos++;
+  let line2 = str_substring(text, nextPos, 45);
   label_set_text(postLine1, line1);
   label_set_text(postLine2, line2);
 };
@@ -276,3 +262,5 @@ updatePost();
 create_timer("cycle_posts", 5000);
 
 print("Social Feed ready!");
+
+on_button("cycle_posts");

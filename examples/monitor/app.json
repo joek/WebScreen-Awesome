@@ -1,7 +1,7 @@
 {
   "name": "System Monitor",
-  "version": "1.0.0",
-  "description": "Display system statistics and performance metrics",
+  "version": "1.1.0",
+  "description": "Display Wi-Fi state, IP address, uptime, free internal heap, and JavaScript arena usage",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

@@ -1,7 +1,7 @@
 {
   "name": "Calculator",
-  "version": "1.0.0",
-  "description": "Simple calculator with basic arithmetic operations",
+  "version": "1.1.0",
+  "description": "Offline arithmetic calculator with a complete keypad display and an automatic calculation demo",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

@@ -1,22 +1,13 @@
-# Blink - Animated GIF Display
+# Blink
 
-A simple WebScreen app that displays an animated GIF on the screen.
+Display the included `blink.gif` from the SD card.
 
-## What it does
-- Displays a blinking animation GIF from the SD card
-- Shows basic GIF rendering capabilities
+## Usage
 
-## Files needed
-- `blink.js` - Main application script
-- `webscreen.json` - Configuration file
-- `blink.gif` - Your animation file (place on SD card root)
+Copy `script.js` and `blink.gif` to the card root, then load the script. No Wi-Fi is needed. If the animation does not appear, check the serial console for the filename and decoder error.
 
-## Setup
-1. Copy all files to your SD card root
-2. Insert SD card into WebScreen
-3. Power on to see the animation
+## Behavior and Limits
 
-## Customization
-- Replace `blink.gif` with your own GIF animation
-- Modify background color in `webscreen.json`
-- Change GIF position in `blink.js` by modifying `show_gif_from_sd()` parameters
+Keep the asset named `/blink.gif`. The firmware reports GIF decode/allocation failures in the serial console.
+
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

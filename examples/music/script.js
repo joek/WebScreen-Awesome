@@ -14,58 +14,42 @@ let artists = "The Dreamers,Neon Band,Calm Waters,Urban Sound,Alpine Beats";
 let durations = "180,210,240,195,225";
 
 // Get value from comma-separated string
-let getItem = function(str, idx) {
-  let len = str_length(str);
-  let pos = 0;
-  let count = 0;
-  let start = 0;
-  while (pos <= len) {
-    let c = "";
-    if (pos < len) {
-      c = str_substring(str, pos, 1);
-    }
-    if (c === "," || pos === len) {
-      if (count === idx) {
-        return str_substring(str, start, pos - start);
-      }
-      count++;
-      start = pos + 1;
-    }
-    pos++;
-  }
-  return "";
+let getItem = function(text, index) {
+  let field = str_split(text, ",", index);
+  if (typeof field !== "string") return "";
+  return field;
 };
 
 // Create styles
 let titleStyle = create_style();
 style_set_text_font(titleStyle, 14);
 style_set_text_color(titleStyle, 0x888888);
-style_set_text_align(titleStyle, 1);
+style_set_text_align(titleStyle, 2);
 
 let trackStyle = create_style();
 style_set_text_font(trackStyle, 28);
 style_set_text_color(trackStyle, 0xFFFFFF);
-style_set_text_align(trackStyle, 1);
+style_set_text_align(trackStyle, 2);
 
 let artistStyle = create_style();
 style_set_text_font(artistStyle, 20);
 style_set_text_color(artistStyle, 0x00BFFF);
-style_set_text_align(artistStyle, 1);
+style_set_text_align(artistStyle, 2);
 
 let timeStyle = create_style();
 style_set_text_font(timeStyle, 14);
 style_set_text_color(timeStyle, 0xAAAAAA);
-style_set_text_align(timeStyle, 0);
+style_set_text_align(timeStyle, 1);
 
 let controlStyle = create_style();
-style_set_text_font(controlStyle, 34);
+style_set_text_font(controlStyle, 28);
 style_set_text_color(controlStyle, 0xFFFFFF);
-style_set_text_align(controlStyle, 1);
+style_set_text_align(controlStyle, 2);
 
 let statusStyle = create_style();
 style_set_text_font(statusStyle, 20);
 style_set_text_color(statusStyle, 0x00FF00);
-style_set_text_align(statusStyle, 1);
+style_set_text_align(statusStyle, 2);
 
 // Album art placeholder (circle)
 let albumStyle = create_style();
@@ -82,24 +66,27 @@ label_set_text(albumArt, "");
 let iconStyle = create_style();
 style_set_text_font(iconStyle, 34);
 style_set_text_color(iconStyle, 0x6666AA);
-style_set_text_align(iconStyle, 1);
+style_set_text_align(iconStyle, 2);
 
 let albumIcon = create_label(110, 85);
 obj_add_style(albumIcon, iconStyle, 0);
 label_set_text(albumIcon, "#");
 
 // Now Playing label
-let nowPlayingLabel = create_label(350, 35);
+style_set_width(trackStyle, 296);
+style_set_width(artistStyle, 296);
+style_set_width(titleStyle, 296);
+let nowPlayingLabel = create_label(225, 35);
 obj_add_style(nowPlayingLabel, titleStyle, 0);
 label_set_text(nowPlayingLabel, "NOW PLAYING");
 
 // Track title
-let trackLabel = create_label(350, 60);
+let trackLabel = create_label(225, 60);
 obj_add_style(trackLabel, trackStyle, 0);
 label_set_text(trackLabel, getItem(tracks, 0));
 
 // Artist name
-let artistLabel = create_label(350, 95);
+let artistLabel = create_label(225, 95);
 obj_add_style(artistLabel, artistStyle, 0);
 label_set_text(artistLabel, getItem(artists, 0));
 
@@ -148,7 +135,7 @@ obj_add_style(nextLabel, controlStyle, 0);
 label_set_text(nextLabel, ">>");
 
 // Status indicator
-let statusLabel = create_label(268, 10);
+let statusLabel = create_label(170, 10);
 obj_add_style(statusLabel, statusStyle, 0);
 label_set_text(statusLabel, "PAUSED");
 
@@ -185,16 +172,24 @@ let updateTrackDisplay = function() {
 };
 
 // Simulate playback
+let previousMs = get_millis();
+let remainderMs = 0;
 let updatePlayback = function() {
-  if (isPlaying === 0) return;
-
-  progress++;
+  let now = get_millis();
+  let elapsed = now - previousMs;
+  if (elapsed < 0) elapsed = elapsed + 4294967296;
+  previousMs = now;
+  if (isPlaying === 0) return 0;
+  remainderMs = remainderMs + elapsed;
+  let seconds = (remainderMs - remainderMs % 1000) / 1000;
+  remainderMs = remainderMs % 1000;
+  progress = progress + seconds;
   if (progress >= trackDuration) {
     // Next track
     currentTrack++;
     if (currentTrack > 4) currentTrack = 0;
     updateTrackDisplay();
-    return;
+    return 0;
   }
 
   // Update time display
@@ -207,44 +202,23 @@ let updatePlayback = function() {
   obj_set_size(progressFill, barWidth, 8);
 };
 
-// Auto-play simulation toggle
-let toggleCounter = 0;
-
-let auto_toggle = function() {
-  toggleCounter++;
-
-  // Toggle play/pause every 5 seconds for demo
-  if (toggleCounter >= 5) {
-    toggleCounter = 0;
-    isPlaying = 1 - isPlaying;
-
-    if (isPlaying) {
-      label_set_text(playLabel, "||");
-      label_set_text(statusLabel, "PLAYING");
-      style_set_text_color(statusStyle, 0x00FF00);
-    } else {
-      label_set_text(playLabel, ">");
-      label_set_text(statusLabel, "PAUSED");
-      style_set_text_color(statusStyle, 0xFFAA00);
-    }
-  }
-
-  // Simulate track change every 20 seconds
-  if (toggleCounter === 3 && isPlaying === 0) {
-    currentTrack++;
-    if (currentTrack > 4) currentTrack = 0;
-    updateTrackDisplay();
-  }
+// This is a player UI demo; the firmware does not output audio.
+let toggle_playback = function(event) {
+  updatePlayback();
+  isPlaying = 1 - isPlaying;
+  previousMs = get_millis();
+  label_set_text(playLabel, isPlaying ? "||" : ">");
+  label_set_text(statusLabel, isPlaying ? "DEMO PLAYING" : "DEMO PAUSED");
 };
-
-// Initialize
+let next_track = function() {
+  currentTrack = (currentTrack + 1) % 5;
+  remainderMs = 0;
+  previousMs = get_millis();
+  updateTrackDisplay();
+};
 updateTrackDisplay();
 isPlaying = 1;
 label_set_text(playLabel, "||");
-label_set_text(statusLabel, "PLAYING");
-
-// Start timers
+label_set_text(statusLabel, "DEMO PLAYING");
+on_button("toggle_playback");
 create_timer("updatePlayback", 1000);
-create_timer("auto_toggle", 1000);
-
-print("Music Player ready!");

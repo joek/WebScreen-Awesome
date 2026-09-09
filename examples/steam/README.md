@@ -1,34 +1,13 @@
-# Steam Connect
+# Steam Profile Demo
 
-Display your Steam profile, friends online, and current game activity on WebScreen.
+Offline Steam-style profile display with sample game activity, level, and friends counts.
 
-## Features
+## Usage
 
-- Profile display with username and level
-- Online status indicator
-- Currently playing game
-- Friends online count
-- Auto-refresh every 60 seconds
+The demo changes game activity automatically. Press the hardware button to cycle games immediately.
 
-## Setup
+## Behavior and Limits
 
-1. Get your Steam API key from https://steamcommunity.com/dev/apikey
-2. Find your 64-bit Steam ID
-3. Edit `steam_app.js` and set:
-   - `STEAM_API_KEY` - Your Steam Web API key
-   - `STEAM_ID` - Your 64-bit Steam ID
+This script does not connect to Steam or read API credentials. Customize the sample profile variables in the script. Long names wrap within the profile card.
 
-## Demo Mode
-
-Without API credentials, the app runs in demo mode with sample data.
-
-## API Endpoints Used
-
-- GetPlayerSummaries - Profile info and current game
-- GetFriendList - Friends count
-
-## Requirements
-
-- WiFi connection
-- Steam Web API key
-- Public Steam profile
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

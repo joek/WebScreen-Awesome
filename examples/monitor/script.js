@@ -3,19 +3,19 @@
 print("Starting Monitor...");
 
 let titleStyle = create_style();
-style_set_text_font(titleStyle, 24);
+style_set_text_font(titleStyle, 28);
 style_set_text_color(titleStyle, 0xFFFFFF);
-style_set_text_align(titleStyle, 1);
+style_set_text_align(titleStyle, 2);
 
 let labelStyle = create_style();
-style_set_text_font(labelStyle, 18);
+style_set_text_font(labelStyle, 20);
 style_set_text_color(labelStyle, 0x00BFFF);
 
 let valueStyle = create_style();
-style_set_text_font(valueStyle, 18);
+style_set_text_font(valueStyle, 20);
 style_set_text_color(valueStyle, 0xFFFFFF);
 
-let title = create_label(268, 15);
+let title = create_label(30, 15);
 obj_add_style(title, titleStyle, 0);
 label_set_text(title, "System Monitor");
 
@@ -41,9 +41,19 @@ let uptimeVal = create_label(120, 120);
 obj_add_style(uptimeVal, valueStyle, 0);
 
 let uptime = 0;
+let memoryVal = create_label(30, 160);
+obj_add_style(memoryVal, valueStyle, 0);
+let jsVal = create_label(30, 190);
+obj_add_style(jsVal, valueStyle, 0);
 
 let update_stats = function() {
-  uptime = uptime + 1;
+  uptime = get_millis() / 1000;
+  uptime = uptime - uptime % 1;
+  let memory = mem_info();
+  let heap = parse_json_value(memory, "heap_free");
+  let used = parse_json_value(memory, "js_used");
+  label_set_text(memoryVal, "Free heap: " + format_number(toNumber(heap) / 1024, 1) + " KB");
+  label_set_text(jsVal, "JS used: " + format_number(toNumber(used) / 1024, 1) + " KB");
 
   if (wifi_status()) {
     label_set_text(wifiVal, "Connected");

@@ -1,7 +1,7 @@
 {
   "name": "Pomodoro Timer",
-  "version": "1.0.0",
-  "description": "Focus timer with work and break intervals for productivity",
+  "version": "1.1.0",
+  "description": "Offline focus timer alternating 25-minute work sessions and five-minute breaks",
   "author": "WebScreen Community",
   "script": "script.js",
   "assets": [],

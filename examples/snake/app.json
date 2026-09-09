@@ -1,7 +1,7 @@
 {
   "name": "Snake Game",
-  "version": "1.0.0",
-  "description": "Classic snake game with touch controls",
+  "version": "1.1.0",
+  "description": "Offline Snake demo on a 30 by 12 grid, controlled by an automatic food-seeking player",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

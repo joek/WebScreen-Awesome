@@ -1,7 +1,7 @@
 {
   "name": "Weather",
-  "version": "1.0.0",
-  "description": "Display current weather conditions and forecast",
+  "version": "1.1.0",
+  "description": "Display current temperature, conditions, humidity, and wind using wttr.in",
   "author": "WebScreen",
   "script": "script.js",
   "assets": [],

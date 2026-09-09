@@ -1,42 +1,13 @@
-# Timer & Stopwatch
+# Countdown Timer
 
-Countdown timer and stopwatch for productivity.
+Offline countdown with pause/resume and restart.
 
-## Features
+## Usage
 
-### Stopwatch Mode
-- Centisecond precision (00:00.00)
-- Lap recording
-- Start/Stop/Reset controls
-- Running status display
+The default is five minutes. Set the top-level `duration_seconds` in `/webscreen.json` to an integer from 1 to 86400. Press the hardware button to pause/resume; when finished, press to restart.
 
-### Timer Mode
-- Countdown timer
-- Visual completion alert
-- Configurable duration
-- Start/Stop/Reset controls
+## Behavior and Limits
 
-## Display Elements
+The initial display includes the full configured duration. Elapsed milliseconds, rather than callback counts, keep the countdown accurate across delayed callbacks and clock wraparound. Pausing preserves fractional seconds. No stopwatch or lap mode is implemented.
 
-- **Mode tabs**: Switch between Stopwatch and Timer
-- **Time display**: Large, easy-to-read numbers
-- **Status indicator**: Shows Running/Paused/Ready/Time's Up
-- **Lap times**: Displays recorded lap intervals (Stopwatch mode)
-- **Control buttons**: Start, Reset, Lap/+1m
-
-## Demo Mode
-
-The app runs a demo cycle that shows:
-1. Starting the stopwatch
-2. Recording a lap
-3. Pausing the stopwatch
-4. Switching to timer mode
-5. Running a 10-second countdown
-6. Timer completion alert
-
-The demo then resets and repeats.
-
-## Requirements
-
-- No WiFi required
-- Runs completely offline
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

@@ -73,6 +73,8 @@ WebScreen-Awesome/
 │   ├── pomodoro/          # Pomodoro focus timer
 │   ├── reminders/         # Personal reminder system
 │   ├── rss/               # RSS feed reader
+│   ├── mqtt_notifications/ # MQTT notification display
+│   ├── ping/              # Network ping / connectivity tester
 │   ├── sd_reader/         # SD card file browser
 │   ├── snake/             # Snake game with AI
 │   ├── social/            # Social media dashboard
@@ -130,13 +132,15 @@ WebScreen-Awesome/
 | App | Description |
 |-----|-------------|
 | [**IoT Monitor**](examples/iot/) | Monitor and control IoT devices and sensors |
+| [**MQTT Notifications**](examples/mqtt_notifications/) | Real-time MQTT notification display with local or public broker support |
 | [**Monitor**](examples/monitor/) | Monitor system performance and resource usage |
 | [**Music**](examples/music/) | Music player interface display |
 
-### Utilities
+### Networking & Utilities
 
 | App | Description |
 |-----|-------------|
+| [**Network Ping**](examples/ping/) | HTTP ping with latency display, loss stats, and visual bar graph |
 | [**Blink**](examples/blink/) | Simple GIF animation display |
 | [**SD Reader**](examples/sd_reader/) | SD card file browser with network status |
 
@@ -149,9 +153,15 @@ WebScreen-Awesome/
 // System
 print(message)              // Console output
 delay(milliseconds)         // Blocking delay
+get_millis()                // Milliseconds since boot (for timing)
 toNumber(string)            // Convert string to number
 numberToString(number)      // Convert number to string
 mem_stats()                 // Print memory stats, returns free heap bytes
+
+// Strings
+str_length(string)          // Get string length
+str_substring(string, start, length)  // Extract substring
+str_index_of(haystack, needle)        // Find position of substring (-1 if not found)
 
 // Display
 set_brightness(value)       // Set display brightness (0-255)
@@ -166,13 +176,40 @@ http_get(url)               // GET request (http://host:port/path)
 http_post(url, data)        // POST request with JSON data
 http_delete(url)            // DELETE request
 http_set_ca_cert_from_sd(path)  // Load SSL certificate
+http_set_header(key, value) // Set custom HTTP header
+http_clear_headers()        // Clear all custom headers
 
 // JSON
 parse_json_value(json, key)  // Extract value from JSON
 
 // SD Card
+sd_read_file(path)          // Read file contents as string
+sd_write_file(path, data)   // Write string to file
 sd_list_dir(path)           // List directory contents
+sd_delete_file(path)        // Delete a file
 show_gif_from_sd(filepath, x, y)  // Display animated GIF from SD card at position
+
+// Time (requires NTP sync)
+get_hours()                 // Current hour (0-23)
+get_minutes()               // Current minute (0-59)
+get_seconds()               // Current second (0-59)
+get_year()                  // Current year
+get_month()                 // Current month (1-12)
+get_day()                   // Current day (1-31)
+get_weekday()               // Day of week (0=Sun, 6=Sat)
+get_epoch()                 // Unix epoch (seconds)
+ntp_synced()                // Check if NTP time is available (returns true/false)
+
+// MQTT (requires mqtt.enabled = true in config)
+mqtt_init(broker, port)     // Initialize MQTT client
+mqtt_connect(client_id)     // Connect to broker (returns 1/0)
+mqtt_subscribe(topic)       // Subscribe to topic
+mqtt_publish(topic, message) // Publish message to topic
+mqtt_loop()                 // Process MQTT packets (call in timer)
+mqtt_on_message(func_name)  // Legacy API; poll the message queue instead
+mqtt_has_message()          // Check if a message is queued (returns 1/0)
+mqtt_get_payload()          // Get queued message payload
+mqtt_msg_clear()            // Clear queued message
 
 // UI - Labels
 create_label(x, y)          // Create text label at position
@@ -229,7 +266,7 @@ style_set_text_font(style, 14);  // Smallest available
 | Image | ✅ | PNG, GIF, SJPG |
 | Arc | ✅ | Circular gauges |
 | Line | ✅ | Line drawing |
-| Button | ✅ | Clickable |
+| Button | LVGL only | No JavaScript touch-event binding |
 | Chart | ✅ | Data visualization |
 | Meter | ✅ | Speedometer/gauge |
 | Span | ✅ | Rich text |
@@ -252,8 +289,8 @@ style_set_text_color(style, 0xFF0000);  // Correct
 style_set_text_color(style, "#FF0000"); // Wrong!
 
 // Fonts are numbers, NOT strings
-style_set_text_font(style, 24);         // Correct
-style_set_text_font(style, "24");       // Wrong!
+style_set_text_font(style, 28);         // Correct
+style_set_text_font(style, "28");       // Wrong!
 
 // Function expressions, NOT declarations
 let myFunc = function() { };            // Correct
@@ -263,14 +300,14 @@ function myFunc() { }                   // Wrong!
 let update = function() { /* ... */ };
 create_timer("update", 1000);           // Pass name as string
 
-// Use 1/0 for boolean values
+// Numeric flags work; native APIs may return true/false, so test truthiness
 let isRunning = 1;                      // true
 let isPaused = 0;                       // false
 
-// No object literals - use separate variables
-let x = 10;                             // Correct
-let y = 20;
-let pos = { x: 10, y: 20 };            // Wrong!
+// Fixed-property objects are supported; arrays and computed access are not
+let pos = { x: 10, y: 20 };
+let x = pos.x;                         // Correct
+// pos["x"] is not supported
 ```
 
 ## 📝 Configuration Reference
@@ -354,6 +391,22 @@ Use our web-based IDE for rapid development without SD card swapping:
    http_post("http://localhost:3000/api", '{"key":"value"}');
    ```
 
+6. **Elk JS engine limitations** — WebScreen uses the Elk embedded JS engine, which is minimal:
+   - **No `while` loops** — use `for` loops instead
+   - **No arrays or computed property access** — use fixed-property objects or individual variables
+   - **No `function` declarations** — use `let fn = function() {};`
+   - **Use explicit returns** — use `return 0;` for an early exit. Inside loops, save the result, `break`, then return after the loop
+   - **Check types before comparisons** — use `typeof value === "string"` before comparing a possibly missing value with `""`
+   - **String functions**: `str_length()`, `str_substring()`, `str_index_of()` are C functions, not methods on strings
+
+7. **Measure time with `get_millis()`**
+   ```javascript
+   let t1 = get_millis();
+   let resp = http_get("http://example.com");
+   let elapsed = get_millis() - t1;
+   print("Request took " + numberToString(elapsed) + " ms");
+   ```
+
 ## 📚 Resources
 
 - **WebScreen Software**: [GitHub Repository](https://github.com/HW-Lab-Hardware-Design-Agency/WebScreen-Software)
@@ -398,3 +451,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issues**: [GitHub Issues](https://github.com/HW-Lab-Hardware-Design-Agency/WebScreen-Awesome/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/HW-Lab-Hardware-Design-Agency/WebScreen-Awesome/discussions)
 - **Website**: [WebScreen.cc](https://webscreen.cc)
+
+## Elk Compatibility and Testing
+
+See [Elk app development](docs/ELK_APPS.md) for the supported syntax, installation steps, and tests using the real engine. Each app README states which data is live and which examples are UI demos.

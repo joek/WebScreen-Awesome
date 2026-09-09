@@ -2,41 +2,22 @@
 
 print("Starting Digital Clock...");
 
-// Wait for WiFi first, then NTP sync
-let syncAttempts = 0;
-if (wifi_status()) {
-  for (;;) {
-    if (ntp_synced()) break;
-    delay(500);
-    syncAttempts = syncAttempts + 1;
-    print("Waiting for NTP sync...");
-    if (syncAttempts > 20) {
-      print("NTP sync timeout");
-      break;
-    }
-  }
-} else {
-  print("No WiFi - NTP unavailable");
-}
-
-if (ntp_synced()) {
-  print("NTP synced! Time: " + numberToString(get_hours()) + ":" + numberToString(get_minutes()));
-}
-
 let timeStyle = create_style();
 style_set_text_font(timeStyle, 48);
 style_set_text_color(timeStyle, 0xFFFFFF);
-style_set_text_align(timeStyle, 1);
+style_set_text_align(timeStyle, 2);
 
 let smallStyle = create_style();
-style_set_text_font(smallStyle, 24);
+style_set_text_font(smallStyle, 28);
 style_set_text_color(smallStyle, 0x00BFFF);
-style_set_text_align(smallStyle, 1);
+style_set_text_align(smallStyle, 2);
 
-let timeLabel = create_label(268, 90);
+style_set_width(timeStyle, 500);
+style_set_width(smallStyle, 500);
+let timeLabel = create_label(18, 70);
 obj_add_style(timeLabel, timeStyle, 0);
 
-let ampmLabel = create_label(268, 150);
+let ampmLabel = create_label(18, 140);
 obj_add_style(ampmLabel, smallStyle, 0);
 
 let padZero = function(n) {
@@ -49,7 +30,11 @@ let update_clock = function() {
   let minute = get_minutes();
   let seconds = get_seconds();
 
-  if (hour < 0) return;
+  if (!ntp_synced() || hour < 0) {
+    label_set_text(timeLabel, "--:--:--");
+    label_set_text(ampmLabel, wifi_status() ? "Syncing time..." : "Waiting for WiFi");
+    return 0;
+  }
 
   let h = hour;
   let ap = "AM";

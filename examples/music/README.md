@@ -1,36 +1,13 @@
-# Music Player
+# Music Player UI Demo
 
-A music player interface display for WebScreen.
+Offline player interface with a five-track sample playlist and elapsed-time progress bar.
 
-## Features
+## Usage
 
-- Now Playing display with track and artist info
-- Progress bar with elapsed/total time
-- Play/Pause status indicator
-- Previous/Next track controls (visual)
-- Album art placeholder
-- Demo playlist with 5 tracks
+Press the hardware button to pause/resume simulated playback. Use `/eval next_track();` to advance immediately. Playback automatically advances at the end of a track.
 
-## Display Elements
+## Behavior and Limits
 
-- **Album art**: Circular placeholder on the left
-- **Track info**: Song title and artist name
-- **Progress bar**: Visual playback progress
-- **Controls**: Previous, Play/Pause, Next buttons
+This is a display demo and produces no audio. The displayed previous/next symbols are not touch inputs. Track names, artists, and durations can be edited in the script; the CSV fields must not contain commas.
 
-## Demo Mode
-
-This app runs in demo mode, automatically cycling through a sample playlist to demonstrate the interface. In a real implementation, this could be connected to:
-
-- MQTT for remote control
-- BLE for smartphone integration
-- External music service APIs
-
-## Customization
-
-The demo playlist can be modified by editing the `tracks`, `artists`, and `durations` variables in the script.
-
-## Requirements
-
-- No WiFi required for demo mode
-- MQTT connection optional for remote control
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

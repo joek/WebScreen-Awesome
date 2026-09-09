@@ -1,42 +1,13 @@
 # Calculator
 
-Simple calculator with basic math operations.
+Offline arithmetic calculator with a complete keypad display and an automatic calculation demo.
 
-## Features
+## Usage
 
-- Basic arithmetic: add, subtract, multiply, divide
-- Clear function
-- Visual button layout
-- Large display for easy reading
-- Demo mode showing sample calculations
+Press the hardware button to pause/resume the demo. Enter keys through the serial console, for example `/eval key("C"); key("1"); key("2"); key("+"); key("5"); key("=");`. Manual input pauses the demo.
 
-## Supported Operations
+## Behavior and Limits
 
-- Addition (+)
-- Subtraction (-)
-- Multiplication (x)
-- Division (/)
-- Percentage (%)
-- Sign toggle (+/-)
+Supported keys: digits, `.`, `+`, `-`, `x`, `/`, `=`, `C`, `%`, and `+/-`. Division by zero displays Error; oversized results display Overflow. Results are rounded to four decimal places. The on-screen keypad is visual; the firmware does not expose touch key events.
 
-## Demo Mode
-
-The calculator runs in demo mode, automatically performing a series of calculations to demonstrate functionality:
-
-- 12 + 5 = 17
-- 25 x 4 = 100
-- 100 - 37 = 63
-- 84 / 4 = 21
-- And more...
-
-## Display
-
-The calculator shows:
-- Main display area with current number/result
-- Operation indicator showing pending calculation
-- Visual button grid layout
-
-## Requirements
-
-- No WiFi required
-- Runs completely offline
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

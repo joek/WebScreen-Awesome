@@ -1,10 +1,12 @@
 {
   "name": "Blink",
-  "version": "1.0.0",
-  "description": "Simple animated GIF display demo",
+  "version": "1.1.0",
+  "description": "Display the included `blink.gif` from the SD card",
   "author": "WebScreen",
   "script": "script.js",
-  "assets": ["blink.gif"],
+  "assets": [
+    "blink.gif"
+  ],
   "settings": {
     "wifi": {
       "ssid": "",

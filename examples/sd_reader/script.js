@@ -1,36 +1,52 @@
-// script.js
-
-// Enable strict mode
 "use strict";
-
-// Print a message
-print("Hello from Elk JavaScript!");
-
-// Wait until connected
-for (; ;) {
-  if (wifi_status()) break;
-  delay(500);
-  print("Waiting for Wi-Fi...");
-}
-print("Connected! IP: " + wifi_get_ip());
-
-print("Before listing directory");
-
-// List files in the root directory
-fileList = sd_list_dir("/");
-print("After sd_list_dir call");
-
-print("fileList is:");
-print(fileList);
-
-if (fileList) {
-  print("Directory contents:");
-  print(fileList);
-} else {
-  print("Failed to list directory");
-}
-
-print("After listing directory");
-
-// Optionally, proceed with other operations.
-print("Script execution completed");
+let titleStyle = create_style();
+style_set_text_font(titleStyle, 28);
+style_set_text_color(titleStyle, 0xFFFFFF);
+let rowStyle = create_style();
+style_set_text_font(rowStyle, 20);
+style_set_text_color(rowStyle, 0x58A6FF);
+style_set_width(rowStyle, 496);
+let title = create_label(20, 12);
+obj_add_style(title, titleStyle, 0);
+label_set_text(title, "SD Card / ");
+let row0 = create_label(20, 55);
+let row1 = create_label(20, 90);
+let row2 = create_label(20, 125);
+let row3 = create_label(20, 160);
+obj_add_style(row0, rowStyle, 0);
+obj_add_style(row1, rowStyle, 0);
+obj_add_style(row2, rowStyle, 0);
+obj_add_style(row3, rowStyle, 0);
+let footer = create_label(20, 210);
+let fileList = "";
+let page = 0;
+let count = 0;
+let row_text = function(index) {
+  let text = str_split(fileList, "\n", index);
+  if (typeof text !== "string") return "";
+  return str_substring(text, 0, 48);
+};
+let render = function() {
+  label_set_text(row0, row_text(page * 4));
+  label_set_text(row1, row_text(page * 4 + 1));
+  label_set_text(row2, row_text(page * 4 + 2));
+  label_set_text(row3, row_text(page * 4 + 3));
+  label_set_text(footer, "Press: next page | " + numberToString(count) + " entries");
+  if (count === 0) label_set_text(row0, "SD unavailable or directory empty");
+};
+let refresh = function() {
+  fileList = sd_list_dir("/");
+  if (typeof fileList !== "string") fileList = "";
+  count = str_split_count(fileList, "\n");
+  if (count > 0 && str_substring(fileList, str_length(fileList) - 1, 1) === "\n") count--;
+  if (page * 4 >= count) page = 0;
+  render();
+};
+let next_page = function(event) {
+  page++;
+  if (page * 4 >= count) page = 0;
+  render();
+};
+refresh();
+on_button("next_page");
+create_timer("refresh", 15000);

@@ -1,28 +1,13 @@
-# Weather Display
+# Weather
 
-Display current weather conditions and forecast for your location.
+Display current temperature, conditions, humidity, and wind using wttr.in.
 
-## Features
+## Usage
 
-- Current temperature display
-- Weather condition description
-- Humidity and wind speed
-- Auto-refresh every 10 minutes
-- Configurable location
+Set top-level `location` in `/webscreen.json`, for example `"New York"`, `"Tokyo"`, or an airport code. ASCII names, spaces, hyphens, periods, underscores, and coordinates are supported. Configure Wi-Fi separately.
 
-## Configuration
+## Behavior and Limits
 
-Edit `webscreen.json` to set your location:
+The app starts immediately, waits for Wi-Fi, and refreshes successful readings every ten minutes. Failed or malformed responses retry after one minute without replacing the last reading. It uses [wttr.in’s compact text format](https://github.com/chubin/wttr.in#one-line-output), avoiding unsupported nested JSON lookups. HTTP is synchronous; slow requests may temporarily delay the display.
 
-```json
-{
-  "location": "London"
-}
-```
-
-You can use city names like "London", "New York", "Tokyo", etc.
-
-## Requirements
-
-- WiFi connection required
-- Uses wttr.in API (no API key needed)
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

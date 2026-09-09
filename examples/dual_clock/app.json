@@ -1,10 +1,10 @@
 {
   "name": "Dual Clock",
-  "version": "1.0.0",
-  "description": "Display two time zones simultaneously using NTP",
+  "version": "1.1.0",
+  "description": "Show local firmware time and a second zone with a configurable relative offset",
   "author": "WebScreen",
   "script": "script.js",
-  "assets": ["dualclock.pem"],
+  "assets": [],
   "settings": {
     "wifi": {
       "ssid": "your_network",

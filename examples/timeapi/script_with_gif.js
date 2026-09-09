@@ -2,43 +2,24 @@
 
 print("Starting Clock with Cat...");
 
-// Wait for WiFi first, then NTP sync
-let syncAttempts = 0;
-if (wifi_status()) {
-  for (;;) {
-    if (ntp_synced()) break;
-    delay(500);
-    syncAttempts = syncAttempts + 1;
-    print("Waiting for NTP sync...");
-    if (syncAttempts > 20) {
-      print("NTP sync timeout");
-      break;
-    }
-  }
-} else {
-  print("No WiFi - NTP unavailable");
-}
-
-if (ntp_synced()) {
-  print("NTP synced! Time: " + numberToString(get_hours()) + ":" + numberToString(get_minutes()));
-}
-
 let months = "JanFebMarAprMayJunJulAugSepOctNovDec";
 
 let dateStyle = create_style();
 style_set_text_font(dateStyle, 34);
 style_set_text_color(dateStyle, 0x72F749);
-style_set_text_align(dateStyle, 1);
+style_set_text_align(dateStyle, 2);
 
-let dateLabel = create_label(211, 132);
+style_set_width(dateStyle, 326);
+let dateLabel = create_label(205, 130);
 obj_add_style(dateLabel, dateStyle, 0);
 
 let timeStyle = create_style();
-style_set_text_font(timeStyle, 48);
+style_set_text_font(timeStyle, 34);
 style_set_text_color(timeStyle, 0xFFFFFF);
-style_set_text_align(timeStyle, 1);
+style_set_text_align(timeStyle, 2);
 
-let timeLabel = create_label(210, 72);
+style_set_width(timeStyle, 326);
+let timeLabel = create_label(205, 65);
 obj_add_style(timeLabel, timeStyle, 0);
 
 show_gif_from_sd("/cat.gif", 0, 0);
@@ -58,7 +39,11 @@ let update_clock = function() {
   let month = get_month();
   let day = get_day();
 
-  if (hour < 0) return;
+  if (!ntp_synced() || hour < 0) {
+    label_set_text(timeLabel, "--:--:--");
+    label_set_text(dateLabel, wifi_status() ? "Syncing time..." : "Waiting for WiFi");
+    return 0;
+  }
 
   let displayHour = hour;
   let ampm = "AM";

@@ -1,38 +1,13 @@
 # Pomodoro Timer
 
-A focus timer using the Pomodoro Technique for productivity on WebScreen.
+Offline focus timer alternating 25-minute work sessions and five-minute breaks.
 
-## Features
+## Usage
 
-- 25-minute work sessions
-- 5-minute short breaks
-- 15-minute long breaks (after 4 sessions)
-- Session progress indicator
-- Visual session counter (dots)
-- Total focus time tracking
+Press the hardware button to pause/resume. The screen shows the current phase and number of completed focus sessions. Edit `WORK_TIME` and `BREAK_TIME` in seconds to change durations.
 
-## The Pomodoro Technique
+## Behavior and Limits
 
-1. Work for 25 minutes (one "pomodoro")
-2. Take a 5-minute break
-3. After 4 pomodoros, take a 15-minute break
-4. Repeat!
+Elapsed milliseconds determine phase changes, including delayed callbacks and clock wraparound. This example does not implement long breaks, audio alerts, or persisted session history.
 
-## Customization
-
-Edit these variables in `pomodoro_app.js`:
-
-```javascript
-let WORK_TIME = 25 * 60;      // Work session (25 min)
-let SHORT_BREAK = 5 * 60;     // Short break (5 min)
-let LONG_BREAK = 15 * 60;     // Long break (15 min)
-let SESSIONS_BEFORE_LONG = 4; // Sessions before long break
-```
-
-## Display
-
-- Large timer display
-- Color changes for work (red) vs break (green)
-- Progress percentage
-- Session dots (fill as you complete sessions)
-- Running total of focus time
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

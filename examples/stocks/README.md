@@ -1,42 +1,13 @@
-# Stock Ticker
+# Stock Ticker Demo
 
-Real-time stock prices and market information display for WebScreen.
+Offline four-symbol stock display using clearly labelled sample prices.
 
-## Features
+## Usage
 
-- Display multiple stock symbols
-- Price and percentage change
-- Color-coded gains/losses (green/red)
-- Auto-scrolling through watchlist
-- Market status indicator
+Load the app without Wi-Fi. Prices update every two seconds and fluctuate around bounded sample values. Edit symbols and their base prices in cents in the script.
 
-## Demo Mode
+## Behavior and Limits
 
-The app runs in demo mode with simulated data by default. Prices update with small random movements to demonstrate the display.
+No financial-data provider is connected. Values are demonstration data, not current market prices.
 
-## Live Data Setup
-
-To use real stock data, you'll need an API key from a stock data provider:
-
-### Alpha Vantage (Free)
-1. Get API key from https://www.alphavantage.co/support/#api-key
-2. Modify the `fetchStockData()` function to use real API calls
-
-### Yahoo Finance API
-Alternative free option for stock data.
-
-## Customization
-
-Edit the `stocks` array to change which symbols are tracked:
-```javascript
-let stocks = [
-    { symbol: "AAPL", name: "Apple Inc.", price: 0, change: 0, changePercent: 0 },
-    // Add more...
-];
-```
-
-## Display
-
-- Shows 4 stocks at a time
-- Auto-scrolls every 5 seconds
-- Updates prices every 30 seconds
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

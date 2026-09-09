@@ -1,45 +1,13 @@
 # Digital Clock
 
-Beautiful digital clock with customizable themes and timezone support.
+NTP clock in 12-hour format with seconds and AM/PM.
 
-## Features
+## Usage
 
-- Large, easy-to-read time display
-- 12-hour format with AM/PM indicator
-- Date and day of week display
-- Multiple color themes
-- Configurable timezone
-- Auto-sync every 10 minutes
+Configure Wi-Fi and `system.timezone` in `/webscreen.json`. The screen appears immediately, shows a synchronization status, and begins displaying time once firmware NTP is ready.
 
-## Configuration
+## Behavior and Limits
 
-Edit `webscreen.json` to customize:
+No HTTP API or PEM certificate is needed. `script_test.js` is an optional connectivity/display diagnostic that also works offline.
 
-```json
-{
-  "timezone": "America/New_York",
-  "theme": 0
-}
-```
-
-### Available Themes
-
-- `0` - Dark (white on black)
-- `1` - Light (black on white)
-- `2` - Blue (cyan on dark blue)
-- `3` - Green (green on dark green)
-
-### Timezone Examples
-
-- `America/New_York`
-- `America/Los_Angeles`
-- `Europe/London`
-- `Europe/Paris`
-- `Asia/Tokyo`
-- `Australia/Sydney`
-
-## Requirements
-
-- WiFi connection required
-- Uses timeapi.io for time sync
-- Optional: clock.pem certificate for HTTPS
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

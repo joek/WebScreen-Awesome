@@ -1,52 +1,13 @@
 # Bid Watcher
 
-Track auction bids and marketplace listings on WebScreen.
+Offline auction dashboard demo with three sample listings. Two cards show bids, time remaining, and winning/outbid state.
 
-## Features
+## Usage
 
-- Monitor multiple auctions simultaneously
-- Real-time countdown timers
-- Winning/Outbid status indicators
-- Bid count tracking
-- Summary stats (winning vs outbid)
+The view changes every eight seconds. Press the hardware button to change pages immediately. Countdown values use elapsed device time and stop at zero. Bids stop increasing when a listing ends.
 
-## Status Indicators
+## Behavior and Limits
 
-- **WINNING** (Green): Your bid is currently the highest
-- **OUTBID** (Red): Someone has outbid you
-- **WATCHING** (Gray): Items you're monitoring but haven't bid on
+Sample bids are generated locally. No marketplace account, bid submission, or live auction API is connected.
 
-## Demo Mode
-
-The app runs in demo mode with simulated auction data. Prices and times update automatically to demonstrate the display.
-
-## Customization
-
-Edit the `auctions` array to track your items:
-
-```javascript
-let auctions = [
-    {
-        title: "Item Name",
-        currentBid: 45.00,
-        yourBid: 42.00,      // Your max bid (0 if watching)
-        endTime: 3600,       // Seconds remaining
-        bids: 12,
-        status: "outbid"     // "winning", "outbid", or "watching"
-    }
-];
-```
-
-## API Integration
-
-To connect to actual auction sites (eBay, etc.), you would need to:
-1. Obtain API credentials
-2. Implement fetch functions for your platform
-3. Update auction data in the main loop
-
-## Display
-
-- Shows 3 auctions at a time
-- Auto-scrolls through watchlist
-- Color-coded status badges
-- Real-time countdown timers
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

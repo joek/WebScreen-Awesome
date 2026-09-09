@@ -26,47 +26,47 @@ let COLOR_DIM = 0x4a5568;
 let titleStyle = create_style();
 style_set_text_font(titleStyle, 28);
 style_set_text_color(titleStyle, COLOR_BLUE);
-style_set_text_align(titleStyle, 0);
+style_set_text_align(titleStyle, 1);
 
 let usernameStyle = create_style();
 style_set_text_font(usernameStyle, 20);
 style_set_text_color(usernameStyle, COLOR_WHITE);
-style_set_text_align(usernameStyle, 0);
+style_set_text_align(usernameStyle, 1);
 
 let statusStyle = create_style();
 style_set_text_font(statusStyle, 14);
 style_set_text_color(statusStyle, COLOR_CYAN);
-style_set_text_align(statusStyle, 0);
+style_set_text_align(statusStyle, 1);
 
 let levelStyle = create_style();
 style_set_text_font(levelStyle, 14);
 style_set_text_color(levelStyle, COLOR_LIGHT);
-style_set_text_align(levelStyle, 0);
+style_set_text_align(levelStyle, 1);
 
 let headerStyle = create_style();
 style_set_text_font(headerStyle, 14);
 style_set_text_color(headerStyle, COLOR_GRAY);
-style_set_text_align(headerStyle, 0);
+style_set_text_align(headerStyle, 1);
 
 let gameStyle = create_style();
 style_set_text_font(gameStyle, 14);
 style_set_text_color(gameStyle, COLOR_GREEN);
-style_set_text_align(gameStyle, 0);
+style_set_text_align(gameStyle, 1);
 
 let friendsStyle = create_style();
 style_set_text_font(friendsStyle, 28);
 style_set_text_color(friendsStyle, COLOR_CYAN);
-style_set_text_align(friendsStyle, 0);
+style_set_text_align(friendsStyle, 1);
 
 let friendsTotalStyle = create_style();
 style_set_text_font(friendsTotalStyle, 14);
 style_set_text_color(friendsTotalStyle, COLOR_GRAY);
-style_set_text_align(friendsTotalStyle, 0);
+style_set_text_align(friendsTotalStyle, 1);
 
 let updateStyle = create_style();
 style_set_text_font(updateStyle, 14);
 style_set_text_color(updateStyle, COLOR_DIM);
-style_set_text_align(updateStyle, 0);
+style_set_text_align(updateStyle, 1);
 
 // Card styles for horizontal layout - display is 536x240
 let profileCardStyle = create_style();
@@ -100,15 +100,17 @@ let profileCard = create_label(15, 45);
 obj_add_style(profileCard, profileCardStyle, 0);
 label_set_text(profileCard, "");
 
+style_set_width(usernameStyle, 180);
+style_set_width(gameStyle, 150);
 let usernameLabel = create_label(25, 55);
 obj_add_style(usernameLabel, usernameStyle, 0);
 label_set_text(usernameLabel, profileName);
 
-let statusLabel = create_label(25, 80);
+let statusLabel = create_label(25, 105);
 obj_add_style(statusLabel, statusStyle, 0);
 label_set_text(statusLabel, profileStatus);
 
-let levelLabel = create_label(25, 105);
+let levelLabel = create_label(25, 135);
 obj_add_style(levelLabel, levelStyle, 0);
 label_set_text(levelLabel, "Level " + numberToString(playerLevel));
 
@@ -149,7 +151,7 @@ label_set_text(friendsTotalLabel, numberToString(friendsTotal) + " total");
 // Status bar at bottom
 let updateLabel = create_label(15, 185);
 obj_add_style(updateLabel, updateStyle, 0);
-label_set_text(updateLabel, "Demo Mode - Configure API for live data");
+label_set_text(updateLabel, "Demo profile - press to cycle games");
 
 // Update display
 let updateDisplay = function() {
@@ -185,7 +187,7 @@ let demo_tick = function() {
 
     // Vary friends online
     if (demoTimer % 10 === 0) {
-        friendsOnline = 10 + (demoTimer % 5);
+        friendsOnline = 8 + random(9);
         updateDisplay();
     }
 };
@@ -194,3 +196,12 @@ print("Steam Connect ready!");
 
 // Start timer
 create_timer("demo_tick", 1000);
+
+let next_game = function(event) {
+  games = (games + 1) % 3;
+  currentGame = "Counter-Strike 2";
+  if (games === 1) currentGame = "Dota 2";
+  if (games === 2) currentGame = "Not playing";
+  updateDisplay();
+};
+on_button("next_game");

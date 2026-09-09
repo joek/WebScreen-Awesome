@@ -11,26 +11,10 @@ let currentPage = 0;
 let totalPages = 4;
 
 // Get value from comma-separated string
-let getItem = function(str, idx) {
-    let len = str_length(str);
-    let pos = 0;
-    let count = 0;
-    let start = 0;
-    while (pos <= len) {
-        let c = "";
-        if (pos < len) {
-            c = str_substring(str, pos, 1);
-        }
-        if (c === "," || pos === len) {
-            if (count === idx) {
-                return str_substring(str, start, pos - start);
-            }
-            count++;
-            start = pos + 1;
-        }
-        pos++;
-    }
-    return "";
+let getItem = function(text, index) {
+  let field = str_split(text, ",", index);
+  if (typeof field !== "string") return "";
+  return field;
 };
 
 // Colors
@@ -61,7 +45,7 @@ style_set_text_color(timeStyle, COLOR_TIME);
 let navStyle = create_style();
 style_set_text_font(navStyle, 14);
 style_set_text_color(navStyle, COLOR_TIME);
-style_set_text_align(navStyle, 1);
+style_set_text_align(navStyle, 2);
 
 let headerBgStyle = create_style();
 style_set_bg_color(headerBgStyle, COLOR_HEADER);
@@ -84,7 +68,7 @@ label_set_text(headerBg, "");
 
 let headerLabel = create_label(15, 12);
 obj_add_style(headerLabel, headerStyle, 0);
-label_set_text(headerLabel, "RSS READER");
+label_set_text(headerLabel, "RSS READER - DEMO");
 
 let navLabel = create_label(450, 15);
 obj_add_style(navLabel, navStyle, 0);
@@ -95,6 +79,7 @@ let card1 = create_label(15, 55);
 obj_add_style(card1, cardStyle, 0);
 label_set_text(card1, "");
 
+style_set_width(titleStyle, 230);
 let title1 = create_label(25, 65);
 obj_add_style(title1, titleStyle, 0);
 label_set_text(title1, "");
@@ -227,3 +212,10 @@ updateDisplay();
 print("RSS Reader ready!");
 
 create_timer("scroll_tick", 1000);
+
+let next_page = function(event) {
+  currentPage = (currentPage + 1) % totalPages;
+  scrollTimer = 0;
+  updateDisplay();
+};
+on_button("next_page");

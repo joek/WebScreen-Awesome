@@ -1,33 +1,13 @@
-# Snake Game
+# Snake AI
 
-Classic snake game with AI auto-play demonstration.
+Offline Snake demo on a 30 by 12 grid, controlled by an automatic food-seeking player.
 
-## Features
+## Usage
 
-- Classic snake gameplay
-- Score tracking
-- AI-controlled snake that chases food
-- Wall collision detection
-- Growing snake body
+The snake avoids walls and occupied body cells. Food appears on a free cell. Press the hardware button to restart at any time, including after Game Over.
 
-## Gameplay
+## Behavior and Limits
 
-The snake automatically moves and tries to eat the red food pellets. Watch as the AI navigates the snake around the play area, avoiding walls while chasing food.
+The snake grows to 11 visible segments. Objects are allocated once and moved each frame; fixed-field linked nodes replace repeated CSV rebuilding. The AI can trap itself and then ends the game. No touchscreen controls are required.
 
-## Game Elements
-
-- **Green square**: Snake head
-- **Dark green squares**: Snake body
-- **Red circle**: Food
-
-## Technical Notes
-
-This demo uses a simple AI that:
-- Turns away from walls when approaching them
-- Occasionally adjusts direction toward food
-- Uses a deterministic random number generator for food placement
-
-## Requirements
-
-- No WiFi required
-- Runs completely offline
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

@@ -1,7 +1,7 @@
 {
   "name": "RSS Reader",
-  "version": "1.0.0",
-  "description": "Display latest news and updates from RSS feeds",
+  "version": "1.1.0",
+  "description": "Paginated news-card display using eight bundled sample headlines",
   "author": "WebScreen Community",
   "script": "script.js",
   "assets": [],

@@ -1,44 +1,13 @@
-# Social Feed
+# Social Feed Demo
 
-Display your social media feeds and updates on WebScreen.
+Offline rotating feed with six sample posts, usernames, avatars, and engagement counts.
 
-## Features
+## Usage
 
-- Post display with username and avatar
-- Post content with automatic line wrapping
-- Timestamp display
-- Like and comment counts
-- Post navigation dots
-- Auto-cycling through posts
+Posts advance every five seconds. Press the hardware button to advance immediately. Text is split over two lines and page indicators reflect the current post.
 
-## Display Elements
+## Behavior and Limits
 
-- **Header**: "Social Feed" title with refresh indicator
-- **Avatar**: User profile picture placeholder with initial
-- **Username**: @handle display
-- **Timestamp**: Relative time (e.g., "2m ago")
-- **Post content**: Up to 2 lines of text
-- **Stats**: Like and comment counts
-- **Navigation**: Dot indicators showing current post position
+No social account or external API is connected. Edit the comma-separated data lists together; individual fields must not contain commas. Long posts are shortened to fit the screen.
 
-## Demo Content
-
-The app includes 6 sample posts from fictional users covering topics like:
-- Tech updates
-- Nature photography
-- Developer life
-- Food adventures
-- Travel experiences
-- Fitness motivation
-
-## Customization
-
-For real social media integration, this app can be extended to:
-- Fetch posts from RSS feeds
-- Connect to social media APIs
-- Receive updates via MQTT
-
-## Requirements
-
-- No WiFi required for demo mode
-- WiFi needed for real social media integration
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

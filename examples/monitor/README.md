@@ -1,23 +1,13 @@
 # System Monitor
 
-Monitor system performance and resource usage on your WebScreen device.
+Display Wi-Fi state, IP address, uptime, free internal heap, and JavaScript arena usage.
 
-## Features
+## Usage
 
-- WiFi connection status and IP address
-- Uptime counter
-- SD card status and file count
-- Current script information
-- Real-time updates every second
+Load the script; no configuration or network connection is required. Readings refresh once per second. Memory values come from firmware `mem_info()` rather than generated demo data.
 
-## Display Layout
+## Behavior and Limits
 
-- **Left column**: WiFi status and IP address
-- **Middle column**: Uptime and refresh rate
-- **Right column**: SD card status and file count
-- **Bottom**: Currently running script name
+Uptime is milliseconds since device boot converted to hours/minutes/seconds. The underlying 32-bit `get_millis()` wraps after about 49.7 days.
 
-## Requirements
-
-- No WiFi required (but shows connection status if available)
-- SD card required for full functionality
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

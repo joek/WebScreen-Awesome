@@ -89,7 +89,7 @@ label_set_text(headerBg, "");
 
 let headerLabel = create_label(15, 12);
 obj_add_style(headerLabel, headerStyle, 0);
-label_set_text(headerLabel, "BID WATCHER");
+label_set_text(headerLabel, "BID WATCHER - DEMO");
 
 let statsLabel = create_label(380, 15);
 obj_add_style(statsLabel, statsStyle, 0);
@@ -100,14 +100,16 @@ let card1 = create_label(15, 55);
 obj_add_style(card1, cardStyle, 0);
 label_set_text(card1, "");
 
+style_set_width(titleStyle, 145);
+style_set_height(titleStyle, 32);
 let title1 = create_label(25, 62);
 obj_add_style(title1, titleStyle, 0);
 label_set_text(title1, item1_title);
 
-let bid1 = create_label(25, 85);
+let bid1 = create_label(25, 98);
 obj_add_style(bid1, bidStyle, 0);
 
-let count1 = create_label(25, 115);
+let count1 = create_label(25, 125);
 obj_add_style(count1, countStyle, 0);
 label_set_text(count1, "12 bids");
 
@@ -126,10 +128,10 @@ let title2 = create_label(285, 62);
 obj_add_style(title2, titleStyle, 0);
 label_set_text(title2, item2_title);
 
-let bid2 = create_label(285, 85);
+let bid2 = create_label(285, 98);
 obj_add_style(bid2, bidStyle, 0);
 
-let count2 = create_label(285, 115);
+let count2 = create_label(285, 125);
 obj_add_style(count2, countStyle, 0);
 label_set_text(count2, "8 bids");
 
@@ -143,7 +145,7 @@ obj_add_style(status2, statusStyle2, 0);
 let pageStyle = create_style();
 style_set_text_font(pageStyle, 14);
 style_set_text_color(pageStyle, COLOR_GRAY);
-style_set_text_align(pageStyle, 1);
+style_set_text_align(pageStyle, 2);
 
 let pageLabel = create_label(268, 210);
 obj_add_style(pageLabel, pageStyle, 0);
@@ -232,21 +234,32 @@ let updateDisplay = function() {
 
 // Simulate auctions
 let simTimer = 0;
+let previousMs = get_millis();
+let remainderMs = 0;
 
 let simulate_tick = function() {
-    // Decrease time
-    if (item1_time > 0) item1_time = item1_time - 1;
-    if (item2_time > 0) item2_time = item2_time - 1;
-    if (item3_time > 0) item3_time = item3_time - 1;
+    let now = get_millis();
+    let elapsed = now - previousMs;
+    if (elapsed < 0) elapsed = elapsed + 4294967296;
+    previousMs = now;
+    remainderMs = remainderMs + elapsed;
+    let seconds = (remainderMs - remainderMs % 1000) / 1000;
+    remainderMs = remainderMs % 1000;
+    item1_time = item1_time - seconds;
+    item2_time = item2_time - seconds;
+    item3_time = item3_time - seconds;
+    if (item1_time < 0) item1_time = 0;
+    if (item2_time < 0) item2_time = 0;
+    if (item3_time < 0) item3_time = 0;
 
     simTimer = simTimer + 1;
 
     // Occasional bid increases
-    if (simTimer % 15 === 0) {
+    if (simTimer % 15 === 0 && item1_time > 0) {
         item1_bid = item1_bid + 50;
         item1_status = 0;
     }
-    if (simTimer % 20 === 0) {
+    if (simTimer % 20 === 0 && item3_time > 0) {
         item3_bid = item3_bid + 100;
     }
 
@@ -263,3 +276,9 @@ updateDisplay();
 print("Bid Watcher ready!");
 
 create_timer("simulate_tick", 1000);
+
+let next_page = function(event) {
+  currentPage = 1 - currentPage;
+  updateDisplay();
+};
+on_button("next_page");

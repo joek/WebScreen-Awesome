@@ -1,32 +1,13 @@
-# SD Reader - File Browser
+# SD Reader
 
-A WebScreen app that lists files on the SD card and shows network status.
+Browse the SD card root directory on screen without waiting for Wi-Fi.
 
-## What it does
-- Connects to WiFi and displays IP address
-- Lists all files in the SD card root directory
-- Shows file listing in serial console
-- Demonstrates SD card API usage
+## Usage
 
-## Files needed
-- `sd_reader.js` - Main application script
-- `webscreen.json` - Configuration with WiFi credentials
+Four directory entries appear per page. Press the hardware button to advance. The listing refreshes every 15 seconds; an unavailable or empty directory displays a status message.
 
-## Setup
-1. Edit `webscreen.json` and add your WiFi credentials
-2. Copy files to your SD card
-3. Add any other files you want to see listed
-4. Insert SD card into WebScreen
-5. Check serial console for file listing
+## Behavior and Limits
 
-## Use Cases
-- Debug SD card issues
-- Verify files are properly copied
-- Test SD card reading functionality
-- Network connectivity testing
+Filenames are shortened to 48 bytes for display. The firmware limits `sd_list_dir()` output to 511 bytes, so this example can only paginate the returned entries; it does not recursively browse or open files.
 
-## Output
-The app outputs to serial console:
-- WiFi connection status
-- Assigned IP address
-- Complete file listing from SD card root
+See [Elk app development](../../docs/ELK_APPS.md) for installation, API constraints, and tests.

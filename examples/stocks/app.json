@@ -1,7 +1,7 @@
 {
   "name": "Stock Ticker",
-  "version": "1.0.0",
-  "description": "Real-time stock prices and market information",
+  "version": "1.1.0",
+  "description": "Offline four-symbol stock display using clearly labelled sample prices",
   "author": "WebScreen Community",
   "script": "script.js",
   "assets": [],
