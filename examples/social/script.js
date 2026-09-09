@@ -8,7 +8,13 @@ let totalPosts = 6;
 
 // Demo posts data
 let usernames = "@techguru,@naturelover,@devlife,@foodie_adventures,@travelbug,@fitness_daily";
-let posts = "Just shipped a new feature! The team worked so hard on this one.,Caught this amazing sunset at the beach today. Nature never disappoints!,Debugging at 2am... found it was a missing semicolon. Classic.,This homemade pasta turned out perfect! Recipe in bio.,Exploring the streets of Tokyo. Every corner is a new adventure!,Morning workout done! 5am club checking in.";
+// Keep upload lines short enough for the ESP32 USB receive buffer.
+let posts = "Just shipped a new feature! The team worked so hard on this one.";
+posts = posts + ",Caught this amazing sunset at the beach today. Nature never disappoints!";
+posts = posts + ",Debugging at 2am... found it was a missing semicolon. Classic.";
+posts = posts + ",This homemade pasta turned out perfect! Recipe in bio.";
+posts = posts + ",Exploring the streets of Tokyo. Every corner is a new adventure!";
+posts = posts + ",Morning workout done! 5am club checking in.";
 let times = "2m ago,15m ago,1h ago,3h ago,5h ago,8h ago";
 let likes = "142,89,256,312,178,423";
 let comments = "23,12,45,67,34,89";

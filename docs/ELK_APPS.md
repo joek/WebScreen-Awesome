@@ -4,6 +4,8 @@
 
 Each example is self-contained. Copy its script and listed assets to the SD card. Merge app settings into `/webscreen.json`, preserving your Wi-Fi credentials, and set `script` to the uploaded filename. `app.json` is catalog metadata; scripts do not read it directly. Use `/load script.js` to reload through the serial console. The cat clock has an alternate script documented in its app README.
 
+For Admin text uploads, keep each source line at most 254 UTF-8 bytes (256 including CRLF). Admin sends a whole line at once, and the default ESP32 USB receive queue can drop excess bytes while the firmware is busy. Split long strings into several short assignments. Re-upload existing SD scripts after updating an app.
+
 ## JavaScript Subset
 
 WebScreen embeds [Elk](https://github.com/cesanta/elk), not a browser or Node.js. Use `let`, semicolons, fixed-property objects, and named function variables: `let tick = function() { ... };`. Arrays, computed property access, closures, `while`, `const`, `var`, arrow functions, and standard-library objects are unavailable.
@@ -35,6 +37,6 @@ python3 tests/run_apps.py --elk ../elk
 python3 tests/run_apps.py --app snake --steps 1000
 ```
 
-Use `--firmware /path/to/WebScreen-Software` when the firmware is elsewhere. Tests compile the actual selected Elk C engine, discover the firmware's registered API names, and supply deterministic hardware/network doubles. They execute every script, repeated callbacks, button actions, offline/missing/error responses, and app-specific behavioral assertions. They also enforce style/object/label limits. No network request or board upload occurs.
+Use `--firmware /path/to/WebScreen-Software` when the firmware is elsewhere. Tests compile the actual selected Elk C engine, discover the firmware's registered API names, and supply deterministic hardware/network doubles. They execute every script, repeated callbacks, button actions, offline/missing/error responses, and app-specific behavioral assertions. They also enforce source-line upload budgets and style/object/label limits. No network request or board upload occurs.
 
 These tests cannot verify physical buttons, SD faults, GIF decoding, TLS/MQTT timing, or the deployed firmware. Also load affected apps on hardware and inspect `/errors` and `/stats`, including recovery after disconnecting Wi-Fi.

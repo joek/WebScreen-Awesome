@@ -257,7 +257,13 @@ class Device:
         raise AssertionError(f'unmodelled API {name}')
 
     def run(self, steps):
-        self.evaluate(self.app.read_text())
+        source = self.app.read_text()
+        # Admin sends each source line in one burst, followed by CRLF. Keep that
+        # burst within the default ESP32 USB RX queue, even if the reader stalls.
+        for number, line in enumerate(source.splitlines(), 1):
+            assert len(line.encode('utf-8')) + 2 <= 256, (
+                f'line {number} exceeds the 254-byte serial upload budget')
+        self.evaluate(source)
         initial_styles, initial_objects = len(self.styles), len(self.objects)
         for i in range(steps):
             if not self.timers:
@@ -285,6 +291,23 @@ class Device:
 
     def check_behavior(self):
         name = self.app.parent.name
+        if name == 'social':
+            usernames = ['@techguru', '@naturelover', '@devlife',
+                         '@foodie_adventures', '@travelbug', '@fitness_daily']
+            for field in ('usernames', 'posts', 'times', 'likes', 'comments'):
+                assert self.evaluate(f'str_split_count({field}, ",");') == 6
+            self.evaluate('currentPost = 5;')
+            for index, username in enumerate(usernames):
+                self.evaluate(self.button + '(1);')
+                assert self.evaluate('currentPost;') == index, 'feed did not wrap correctly'
+                assert self.text('usernameLabel') == username
+                assert self.text('counterLabel') == f'{index + 1} of 6'
+                post = self.evaluate(f'getItem(posts, {index});')
+                assert post, 'empty feed post'
+                displayed = self.text('postLine1') + ' ' + self.text('postLine2')
+                assert displayed.strip() == post, 'post text was lost during wrapping'
+                assert self.text('likesLabel') == self.evaluate(f'getItem(likes, {index});') + ' likes'
+                assert self.text('commentsLabel') == self.evaluate(f'getItem(comments, {index});') + ' comments'
         if name == 'ping':
             assert self.evaluate('pingCount;') == len(self.requests)
             if self.scenario in ('missing', 'bad_data'):

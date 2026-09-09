@@ -1,6 +1,6 @@
 {
   "name": "Social Stats",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Offline rotating feed with six sample posts, usernames, avatars, and engagement counts",
   "author": "WebScreen",
   "script": "script.js",
