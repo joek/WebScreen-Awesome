@@ -1,0 +1,23 @@
+{
+  "name": "LVGL Chart Gallery",
+  "version": "1.0.0",
+  "description": "Curve, line, bar, and scatter charts with two live synthetic signals.",
+  "author": "WebScreen",
+  "min_firmware": "4.0.0",
+  "lvgl_version": "9.5",
+  "script": "script.js",
+  "assets": [],
+  "settings": {
+    "wifi": {
+      "ssid": "",
+      "pass": ""
+    },
+    "mqtt": {
+      "enabled": false
+    }
+  },
+  "screen": {
+    "background": "#0b1423",
+    "foreground": "#eaf0fa"
+  }
+}

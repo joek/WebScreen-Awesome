@@ -46,6 +46,7 @@ class Device:
         self.online = scenario != 'offline'
         self.synced = self.online
         self.styles, self.objects, self.timers = {}, {}, {}
+        self.subobjects = {}
         self.button, self.errors, self.callbacks = '', [], []
         self.messages, self.subscribed = [], False
         self.mqtt_attempts = 0
@@ -109,7 +110,8 @@ class Device:
             return h
         if name == 'show_gif_from_sd':
             return None  # Firmware returns null on success AND failure.
-        if name in ('create_label', 'create_image', 'draw_rect'):
+        if name in ('create_label', 'create_image', 'draw_rect', 'create_arc_label',
+                    'lv_chart_create', 'lv_meter_create', 'lv_line_create'):
             h = len(self.objects) + 256
             assert len(self.objects) < 256, 'object registry exhausted'
             self.objects[h] = {'kind': name, 'text': '', 'styles': [], 'args': a}
@@ -121,7 +123,7 @@ class Device:
                 assert a[1] in (14, 20, 28, 34, 40, 44, 48), f'unavailable font {a[1]}'
             self.styles[a[0]][name[10:]] = a[1]
             return None
-        if name in ('obj_add_style', 'label_set_text', 'obj_set_size', 'move_obj', 'obj_add_flag', 'obj_clear_flag'):
+        if name in ('obj_add_style', 'label_set_text', 'obj_set_size', 'move_obj', 'obj_add_flag', 'obj_clear_flag', 'obj_align'):
             assert a[0] in self.objects, 'invalid object handle'
             obj = self.objects[a[0]]
             if name == 'obj_add_style':
@@ -136,6 +138,53 @@ class Device:
             else:
                 obj[name] = a[1:]
             return None
+        if name in ('arc_label_set_angles', 'arc_label_set_direction', 'lv_line_set_points'):
+            kind = 'lv_line_create' if name == 'lv_line_set_points' else 'create_arc_label'
+            assert a[0] in self.objects and self.objects[a[0]]['kind'] == kind
+            if name == 'lv_line_set_points':
+                assert len(a) >= 5 and len(a) <= 33 and len(a) % 2 == 1
+            else:
+                assert len(a) == (3 if name == 'arc_label_set_angles' else 2)
+            assert all(isinstance(v, (int, float)) and math.isfinite(v) for v in a[1:])
+            self.objects[a[0]][name] = list(a[1:])
+            return True
+        if name in ('lv_chart_add_series', 'lv_meter_add_scale',
+                    'lv_meter_add_needle_line', 'lv_meter_add_arc'):
+            kind = 'lv_chart_create' if name == 'lv_chart_add_series' else 'lv_meter_create'
+            assert a[0] in self.objects and self.objects[a[0]]['kind'] == kind
+            if name in ('lv_meter_add_needle_line', 'lv_meter_add_arc'):
+                assert self.subobjects[a[1]]['owner'] == a[0], 'scale belongs to another meter'
+            handle = len(self.subobjects) + 1024
+            self.subobjects[handle] = {'owner': a[0], 'kind': name, 'values': []}
+            return handle
+        if name in ('lv_chart_set_type', 'lv_chart_set_point_count',
+                    'lv_chart_set_div_line_count', 'lv_chart_set_range'):
+            assert self.objects[a[0]]['kind'] == 'lv_chart_create'
+            if name == 'lv_chart_set_type':
+                assert a[1] in (1, 2, 3, 4)
+            if name == 'lv_chart_set_point_count':
+                assert 1 <= a[1] <= 1024
+            self.objects[a[0]][name] = a[1:]
+            return True
+        if name in ('lv_chart_set_next_value', 'lv_chart_set_next_value2',
+                    'lv_meter_set_scale_range', 'lv_meter_set_scale_ticks',
+                    'lv_meter_set_scale_major_ticks', 'lv_meter_set_indicator_start_value',
+                    'lv_meter_set_indicator_end_value', 'lv_meter_set_indicator_value'):
+            assert a[1] in self.subobjects, 'invalid series/scale/indicator handle'
+            sub = self.subobjects[a[1]]
+            assert sub['owner'] == a[0], 'subobject belongs to another widget'
+            if name.startswith('lv_chart_'):
+                assert sub['kind'] == 'lv_chart_add_series'
+                chart = self.objects[a[0]]
+                expected = 4 if name.endswith('value2') else 3
+                assert len(a) == expected
+                assert (chart['lv_chart_set_type'][0] == 3) == (expected == 4)
+                sub['values'].append(a[2:])
+                count = int(chart['lv_chart_set_point_count'][0])
+                sub['values'] = sub['values'][-count:]
+            else:
+                sub[name] = a[2:]
+            return True
         if name == 'create_timer':
             assert re.fullmatch(r'[A-Za-z_$][\w$]{0,54}', a[0]), 'invalid callback name'
             assert 1 <= a[1] <= 2147483647, 'invalid period'
@@ -282,6 +331,26 @@ class Device:
                                  json.dumps({'title':'A, B', 'message':'A long message. ' * 50, 'source':'Test'})]
         assert len(self.styles) == initial_styles, 'styles allocated after startup'
         assert len(self.objects) == initial_objects, 'objects allocated after startup'
+        if self.app.parent.name.startswith('lvgl95_'):
+            assert not self.requests and not self.mqtt_attempts, 'demo must work without a network'
+            subobjects = len(self.subobjects)
+            modes = int(self.evaluate('demo_modes;'))
+            start_mode = self.evaluate('demo_mode;')
+            initial_timers = len(self.timers)
+            for _ in range(modes * 2):
+                mode = self.evaluate('demo_mode;')
+                self.evaluate(self.button + '(1);')
+                assert self.evaluate('demo_mode;') == (mode + 1) % modes
+                frame = self.evaluate('demo_frame;')
+                paused = self.evaluate('demo_paused;')
+                for _ in range(20):
+                    for callback in list(self.timers):
+                        self.evaluate(callback + '();')
+                assert self.evaluate('demo_frame;') == frame + (0 if paused else 20)
+                self.lib.js_gc(self.js)
+                assert len(self.styles) == initial_styles and len(self.objects) == initial_objects
+                assert len(self.subobjects) == subobjects and len(self.timers) == initial_timers
+            assert self.evaluate('demo_mode;') == start_mode
         self.check_behavior()
         return initial_styles, initial_objects
 

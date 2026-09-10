@@ -39,4 +39,6 @@ python3 tests/run_apps.py --app snake --steps 1000
 
 Use `--firmware /path/to/WebScreen-Software` when the firmware is elsewhere. Tests compile the actual selected Elk C engine, discover the firmware's registered API names, and supply deterministic hardware/network doubles. They execute every script, repeated callbacks, button actions, offline/missing/error responses, and app-specific behavioral assertions. They also enforce source-line upload budgets and style/object/label limits. No network request or board upload occurs.
 
+The `lvgl95_*` demos require the firmware 4.0 / LVGL 9.5 bindings. Point `--firmware` at a compatible firmware checkout when testing the full collection. Demo checks cycle every mode twice, verify pause/resume, check widget ownership and stable allocation counts, and run garbage collection. Their `app.json` manifests record `min_firmware` and `lvgl_version`; use the same fields in Admin's catalog for visible compatibility labels.
+
 These tests cannot verify physical buttons, SD faults, GIF decoding, TLS/MQTT timing, or the deployed firmware. Also load affected apps on hardware and inspect `/errors` and `/stats`, including recovery after disconnecting Wi-Fi.

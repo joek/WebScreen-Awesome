@@ -1,0 +1,23 @@
+{
+  "name": "LVGL Motion Lines",
+  "version": "1.0.0",
+  "description": "Two independent animated line traces and a moving marker.",
+  "author": "WebScreen",
+  "min_firmware": "4.0.0",
+  "lvgl_version": "9.5",
+  "script": "script.js",
+  "assets": [],
+  "settings": {
+    "wifi": {
+      "ssid": "",
+      "pass": ""
+    },
+    "mqtt": {
+      "enabled": false
+    }
+  },
+  "screen": {
+    "background": "#0b1423",
+    "foreground": "#eaf0fa"
+  }
+}

@@ -84,12 +84,23 @@ WebScreen-Awesome/
 │   ├── timeapi/           # Internet clock with animation
 │   ├── timer/             # Countdown timer & stopwatch
 │   └── weather/           # Weather display
-├── CLAUDE.md              # AI assistant documentation
 ├── LICENSE                # MIT License
 └── README.md              # This file
 ```
 
 ## 🌟 Example Applications
+
+### LVGL 9.5 Demos
+
+**All five demos require firmware 4.0 (LVGL 9.5 compatible).** They run offline without extra assets. Find them in [WebScreen Admin](https://admin.webscreen.cc) by searching for `LVGL` or `firmware 4.0`. Short-press the hardware button to cycle modes or pause; long-press still powers off.
+
+| App | What it demonstrates |
+| --- | --- |
+| [**LVGL Arc Text**](examples/lvgl95_arc_text/) | Two animated circular labels with different radii, fonts, and text directions. |
+| [**LVGL Chart Gallery**](examples/lvgl95_charts/) | Curve, line, bar, and scatter charts with two live synthetic signals. |
+| [**LVGL Gauge Dashboard**](examples/lvgl95_gauges/) | Three independent gauges with animated needles and colored progress arcs. Uses synthetic data. |
+| [**LVGL Typography**](examples/lvgl95_typography/) | Font sizes, wrapped text, RGB color bars, and switchable dark and light themes. |
+| [**LVGL Motion Lines**](examples/lvgl95_motion/) | Two independent animated line traces and a moving marker. |
 
 ### Productivity
 
