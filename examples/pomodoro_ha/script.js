@@ -10,6 +10,7 @@ let username = "";
 let password = "";
 let baseTopic = "webscreen/pomodoro";
 let mqttEnabled = true;
+let availabilityTopic = "";
 
 let read_mqtt_value = function(key, legacyKey) {
   let value = parse_json_value(config, legacyKey);
@@ -41,6 +42,19 @@ if (typeof config === "string" && config !== "") {
   username = str_substring(read_mqtt_value("username", "mqtt_username"), 0, 63);
   password = str_substring(read_mqtt_value("password", "mqtt_password"), 0, 63);
 }
+
+let normalize_topic = function(topic) {
+  if (typeof topic !== "string" || topic === "") return "webscreen/pomodoro";
+  let start = 0;
+  let end = topic.length;
+  while (start < end && str_substring(topic, start, start + 1) === "/") start++;
+  while (end > start && str_substring(topic, end - 1, end) === "/") end--;
+  if (end <= start) return "webscreen/pomodoro";
+  return str_substring(topic, start, end);
+};
+
+baseTopic = normalize_topic(baseTopic);
+availabilityTopic = baseTopic + "/availability";
 
 show_gif_from_sd("/blink.gif", 173, 65);
 
@@ -123,7 +137,7 @@ let publish_state = function() {
   mqtt_publish(baseTopic + "/sessions/state", numberToString(sessionCount));
   mqtt_publish(baseTopic + "/remaining/state", numberToString((remainingMs + 999) / 1000));
   mqtt_publish(baseTopic + "/end_time/state", numberToString(get_epoch() + ((remainingMs + 999) / 1000)));
-  mqtt_publish(baseTopic + "/availability", "online");
+  mqtt_publish(availabilityTopic, "online");
   return 0;
 };
 
@@ -132,6 +146,8 @@ let send_ha_discovery = function() {
     "\"unique_id\":\"webscreen_pomodoro_switch\"," +
     "\"command_topic\":\"" + baseTopic + "/set\"," +
     "\"state_topic\":\"" + baseTopic + "/state\"," +
+    "\"availability_topic\":\"" + availabilityTopic + "\"," +
+    "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
     "\"payload_on\":\"ON\",\"payload_off\":\"OFF\"," +
     "\"state_on\":\"ON\",\"state_off\":\"OFF\"," +
     "\"retain\":true}";
@@ -139,23 +155,31 @@ let send_ha_discovery = function() {
   let sessionsConfig = "{\"name\":\"WebScreen Pomodoro Sessions\"," +
     "\"unique_id\":\"webscreen_pomodoro_sessions\"," +
     "\"state_topic\":\"" + baseTopic + "/sessions/state\"," +
+    "\"availability_topic\":\"" + availabilityTopic + "\"," +
+    "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
     "\"unit_of_measurement\":\"sessions\"," +
     "\"min\":0,\"max\":1000,\"step\":1,\"retain\":true}";
 
   let remainingConfig = "{\"name\":\"WebScreen Pomodoro Remaining\"," +
     "\"unique_id\":\"webscreen_pomodoro_remaining\"," +
     "\"state_topic\":\"" + baseTopic + "/remaining/state\"," +
+    "\"availability_topic\":\"" + availabilityTopic + "\"," +
+    "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
     "\"unit_of_measurement\":\"s\",\"device_class\":\"duration\"," +
     "\"state_class\":\"measurement\",\"retain\":true}";
 
   let endConfig = "{\"name\":\"WebScreen Pomodoro End Time\"," +
     "\"unique_id\":\"webscreen_pomodoro_end_time\"," +
     "\"state_topic\":\"" + baseTopic + "/end_time/state\"," +
+    "\"availability_topic\":\"" + availabilityTopic + "\"," +
+    "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
     "\"retain\":true}";
 
   let resetConfig = "{\"name\":\"WebScreen Pomodoro Reset\"," +
     "\"unique_id\":\"webscreen_pomodoro_reset\"," +
     "\"command_topic\":\"" + baseTopic + "/reset/set\"," +
+    "\"availability_topic\":\"" + availabilityTopic + "\"," +
+    "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
     "\"payload_press\":\"reset\",\"retain\":true}";
 
   mqtt_publish("homeassistant/switch/webscreen_pomodoro/config", switchConfig);
@@ -268,7 +292,10 @@ let main_loop = function() {
         if (mqttConnected) {
           mqttConnected = mqtt_subscribe(baseTopic + "/reset/set");
         }
-        if (mqttConnected) send_ha_discovery();
+        if (mqttConnected) {
+          send_ha_discovery();
+          publish_state();
+        }
       }
     }
   }
@@ -276,7 +303,10 @@ let main_loop = function() {
     lastRetry = now;
     mqttConnected = mqtt_subscribe(baseTopic + "/set");
     if (mqttConnected) mqttConnected = mqtt_subscribe(baseTopic + "/reset/set");
-    if (mqttConnected) send_ha_discovery();
+    if (mqttConnected) {
+      send_ha_discovery();
+      publish_state();
+    }
   }
   for (let i = 0; i < 4 && mqtt_has_message(); i++) {
     let payload = mqtt_get_payload();

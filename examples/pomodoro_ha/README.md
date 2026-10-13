@@ -41,4 +41,14 @@ It also subscribes to:
 - `webscreen/pomodoro/set`
 - `webscreen/pomodoro/reset/set`
 
+It publishes state to:
+
+- `webscreen/pomodoro/state`
+- `webscreen/pomodoro/sessions/state`
+- `webscreen/pomodoro/remaining/state`
+- `webscreen/pomodoro/end_time/state`
+- `webscreen/pomodoro/availability`
+
+Note: the configured MQTT topic is treated as the base topic. Leading/trailing `/` are trimmed, so `webscreen/pomodoro`, `/webscreen/pomodoro`, and `webscreen/pomodoro/` all resolve to the same topics.
+
 The default idle screen is the same Blink GIF as the Blink example. When the timer is running, an overlay shows the remaining time until the session ends. Once the countdown expires, the timer switches off and the default GIF screen is restored.
