@@ -24,7 +24,13 @@ A collection of awesome apps, mods, and resources for WebScreen! Share your crea
          "pass": "your_password"
        },
        "mqtt": {
-         "enabled": false
+         "enabled": false,
+         "broker": "broker.hivemq.com",
+         "port": 1883,
+         "topic": "webscreen/notifications",
+         "client_id": "",
+         "username": "",
+         "password": ""
        }
      },
      "screen": {

@@ -10,18 +10,37 @@ let topic = "webscreen/notifications";
 let clientId = "webscreen-" + numberToString(random(1000000000));
 let username = "";
 let password = "";
+let mqttEnabled = true;
+
+let read_mqtt_value = function(key, legacyKey) {
+  let value = parse_json_value(config, legacyKey);
+  if (value !== "") return value;
+  if (typeof config === "string" && config !== "") {
+    let settings = parse_json_value(config, "settings");
+    if (settings !== "") {
+      let mqttSettings = parse_json_value(settings, "mqtt");
+      if (mqttSettings !== "") {
+        value = parse_json_value(mqttSettings, key);
+        if (value !== "") return value;
+      }
+    }
+  }
+  return "";
+};
 
 if (typeof config === "string" && config !== "") {
-  let b = parse_json_value(config, "mqtt_broker");
-  let p = parse_json_value(config, "mqtt_port");
-  let t = parse_json_value(config, "mqtt_topic");
-  let c = parse_json_value(config, "mqtt_client_id");
+  let enabled = read_mqtt_value("enabled", "mqtt_enabled");
+  if (enabled !== "") mqttEnabled = enabled === "true";
+  let b = read_mqtt_value("broker", "mqtt_broker");
+  let p = read_mqtt_value("port", "mqtt_port");
+  let t = read_mqtt_value("topic", "mqtt_topic");
+  let c = read_mqtt_value("client_id", "mqtt_client_id");
   if (b !== "") broker = str_substring(b, 0, 127);
   if (p !== "" && toNumber(p) >= 1 && toNumber(p) <= 65535) port = toNumber(p);
   if (t !== "") topic = str_substring(t, 0, 127);
   if (c !== "") clientId = str_substring(c, 0, 63);
-  username = str_substring(parse_json_value(config, "mqtt_username"), 0, 63);
-  password = str_substring(parse_json_value(config, "mqtt_password"), 0, 63);
+  username = str_substring(read_mqtt_value("username", "mqtt_username"), 0, 63);
+  password = str_substring(read_mqtt_value("password", "mqtt_password"), 0, 63);
 }
 
 print("Broker: " + broker + ":" + numberToString(port));
@@ -165,6 +184,12 @@ let retryMs = 0;
 let cycleCount = 0;
 let connectedOnce = 0;
 let main_loop = function() {
+  if (!mqttEnabled) {
+    label_set_text(statusLabel, "MQTT disabled");
+    mqttConnected = 0;
+    retryMs = 0;
+    return 0;
+  }
   if (!wifi_status()) {
     label_set_text(statusLabel, "No WiFi");
     mqttConnected = 0;

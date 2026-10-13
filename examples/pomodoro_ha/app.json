@@ -1,0 +1,29 @@
+{
+  "name": "Pomodoro Home Assistant",
+  "version": "1.0.0",
+  "description": "Home Assistant MQTT Pomodoro with Blink GIF default screen",
+  "author": "WebScreen Community",
+  "script": "script.js",
+  "assets": [
+    "blink.gif"
+  ],
+  "settings": {
+    "wifi": {
+      "ssid": "",
+      "pass": ""
+    },
+    "mqtt": {
+      "enabled": true,
+      "broker": "broker.hivemq.com",
+      "port": 1883,
+      "topic": "webscreen/pomodoro",
+      "client_id": "",
+      "username": "",
+      "password": ""
+    }
+  },
+  "screen": {
+    "background": "#1d1d1d",
+    "foreground": "#FFFFFF"
+  }
+}

@@ -15,7 +15,13 @@
       "pass": ""
     },
     "mqtt": {
-      "enabled": true
+      "enabled": true,
+      "broker": "broker.hivemq.com",
+      "port": 1883,
+      "topic": "webscreen/notifications",
+      "client_id": "",
+      "username": "",
+      "password": ""
     }
   },
   "screen": {

@@ -48,18 +48,19 @@ Download the installer from [mosquitto.org/download](https://mosquitto.org/downl
 
 ### webscreen.json
 
-The app reads MQTT settings as top-level keys from `webscreen.json`:
+The app reads MQTT settings from the `settings.mqtt` object in `webscreen.json`:
 
 | Key | Default | Description |
 |---|---|---|
-| `mqtt_broker` | `broker.hivemq.com` | MQTT broker hostname or IP |
-| `mqtt_port` | `1883` | MQTT broker port |
-| `mqtt_topic` | `webscreen/notifications` | Topic to subscribe to |
-| `mqtt_client_id` | generated per app load | Optional client ID; use a unique value per device |
-| `mqtt_username` | empty | Optional broker username (up to 63 bytes) |
-| `mqtt_password` | empty | Optional broker password (up to 63 bytes) |
+| `settings.mqtt.broker` | `broker.hivemq.com` | MQTT broker hostname or IP |
+| `settings.mqtt.port` | `1883` | MQTT broker port |
+| `settings.mqtt.topic` | `webscreen/notifications` | Topic to subscribe to |
+| `settings.mqtt.client_id` | generated per app load | Optional client ID; use a unique value per device |
+| `settings.mqtt.username` | empty | Optional broker username (up to 63 bytes) |
+| `settings.mqtt.password` | empty | Optional broker password (up to 63 bytes) |
+| `settings.mqtt.enabled` | `true` | Enable or disable MQTT for the app |
 
-MQTT must also be enabled in the `settings.mqtt` section.
+Legacy top-level `mqtt_*` keys are still supported for compatibility.
 
 ### Option 1: Local Broker (recommended)
 
@@ -121,12 +122,16 @@ ipconfig getifaddr en0
 {
   "settings": {
     "wifi": { "ssid": "MyNetwork", "pass": "MyPassword" },
-    "mqtt": { "enabled": true }
+    "mqtt": {
+      "enabled": true,
+      "broker": "192.168.1.100",
+      "port": 1883,
+      "topic": "webscreen/notifications",
+      "client_id": "webscreen01",
+      "username": "",
+      "password": ""
+    }
   },
-  "mqtt_broker": "192.168.1.100",
-  "mqtt_port": 1883,
-  "mqtt_topic": "webscreen/notifications",
-  "mqtt_client_id": "webscreen01",
   "screen": { "background": "#0d1117", "foreground": "#FFFFFF" },
   "script": "mqtt.js"
 }
@@ -149,12 +154,16 @@ Free public broker, no account needed. Good for quick testing but has limitation
 {
   "settings": {
     "wifi": { "ssid": "MyNetwork", "pass": "MyPassword" },
-    "mqtt": { "enabled": true }
+    "mqtt": {
+      "enabled": true,
+      "broker": "broker.hivemq.com",
+      "port": 1883,
+      "topic": "webscreen/notifications",
+      "client_id": "webscreen01",
+      "username": "",
+      "password": ""
+    }
   },
-  "mqtt_broker": "broker.hivemq.com",
-  "mqtt_port": 1883,
-  "mqtt_topic": "webscreen/notifications",
-  "mqtt_client_id": "webscreen01",
   "screen": { "background": "#0d1117", "foreground": "#FFFFFF" },
   "script": "mqtt.js"
 }
@@ -170,8 +179,15 @@ mosquitto_pub -h broker.hivemq.com -t "webscreen/notifications" \
 Another free public broker at `test.mosquitto.org`. Same limitations as HiveMQ.
 
 ```json
-"mqtt_broker": "test.mosquitto.org",
-"mqtt_port": 1883
+{
+  "settings": {
+    "mqtt": {
+      "enabled": true,
+      "broker": "test.mosquitto.org",
+      "port": 1883
+    }
+  }
+}
 ```
 
 ```bash
@@ -184,8 +200,15 @@ mosquitto_pub -h test.mosquitto.org -t "webscreen/notifications" \
 For remote access, run Mosquitto on a VPS or cloud server (e.g., AWS, DigitalOcean, Raspberry Pi with port forwarding).
 
 ```json
-"mqtt_broker": "mqtt.yourserver.com",
-"mqtt_port": 1883
+{
+  "settings": {
+    "mqtt": {
+      "enabled": true,
+      "broker": "mqtt.yourserver.com",
+      "port": 1883
+    }
+  }
+}
 ```
 
 ## Sending Notifications
