@@ -47,8 +47,12 @@ let normalize_topic = function(topic) {
   if (typeof topic !== "string" || topic === "") return "webscreen/pomodoro";
   let start = 0;
   let end = topic.length;
-  while (start < end && str_substring(topic, start, start + 1) === "/") start++;
-  while (end > start && str_substring(topic, end - 1, end) === "/") end--;
+  for (; start < end; start++) {
+    if (str_substring(topic, start, start + 1) !== "/") break;
+  }
+  for (; end > start; end--) {
+    if (str_substring(topic, end - 1, end) !== "/") break;
+  }
   if (end <= start) return "webscreen/pomodoro";
   return str_substring(topic, start, end);
 };
