@@ -31,15 +31,17 @@ Example `/webscreen.json` snippet:
 The app publishes Home Assistant discovery payloads for:
 
 - switch: `webscreen_pomodoro`
-- number: `webscreen_pomodoro_sessions`
+- sensor: `webscreen_pomodoro_sessions`
 - sensor: `webscreen_pomodoro_remaining`
 - sensor: `webscreen_pomodoro_end_time`
 - button: `webscreen_pomodoro_reset`
 
+All entities are grouped under one dedicated Home Assistant MQTT device named **WebScreen Pomodoro**.
+
 It also subscribes to:
 
 - `webscreen/pomodoro/set`
-- `webscreen/pomodoro/reset/set`
+- `webscreen/pomodoro/reset/set` (legacy compatibility)
 
 It publishes state to:
 
@@ -48,6 +50,17 @@ It publishes state to:
 - `webscreen/pomodoro/remaining/state`
 - `webscreen/pomodoro/end_time/state`
 - `webscreen/pomodoro/availability`
+
+Control payloads on `webscreen/pomodoro/set`:
+
+- `ON` / `OFF` to start or stop
+- `RESET` to reset the current session
+
+MQTT retain behavior:
+
+- Discovery payloads (`homeassistant/.../config`) should be retained by the broker if your firmware publish API supports retained publish for discovery topics.
+- Command entities (switch/button) are configured with `retain: false` so Home Assistant does not retain control commands.
+- Sensor entity configs do not include a `retain` option.
 
 Note: the configured MQTT topic is treated as the base topic. Leading/trailing `/` are trimmed, so `webscreen/pomodoro`, `/webscreen/pomodoro`, and `webscreen/pomodoro/` all resolve to the same topics.
 

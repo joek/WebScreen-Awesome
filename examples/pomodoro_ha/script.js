@@ -146,6 +146,12 @@ let publish_state = function() {
 };
 
 let send_ha_discovery = function() {
+  let deviceConfig = "{\"identifiers\":[\"" + baseTopic + "\"]," +
+    "\"name\":\"WebScreen Pomodoro\"," +
+    "\"manufacturer\":\"WebScreen Community\"," +
+    "\"model\":\"WebScreen\"," +
+    "\"sw_version\":\"1.0.0\"}";
+
   let switchConfig = "{\"name\":\"WebScreen Pomodoro\"," +
     "\"unique_id\":\"webscreen_pomodoro_switch\"," +
     "\"command_topic\":\"" + baseTopic + "/set\"," +
@@ -153,8 +159,9 @@ let send_ha_discovery = function() {
     "\"availability_topic\":\"" + availabilityTopic + "\"," +
     "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
     "\"payload_on\":\"ON\",\"payload_off\":\"OFF\"," +
+    "\"device\":" + deviceConfig + "," +
     "\"state_on\":\"ON\",\"state_off\":\"OFF\"," +
-    "\"retain\":true}";
+    "\"retain\":false}";
 
   let sessionsConfig = "{\"name\":\"WebScreen Pomodoro Sessions\"," +
     "\"unique_id\":\"webscreen_pomodoro_sessions\"," +
@@ -162,32 +169,36 @@ let send_ha_discovery = function() {
     "\"availability_topic\":\"" + availabilityTopic + "\"," +
     "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
     "\"unit_of_measurement\":\"sessions\"," +
-    "\"min\":0,\"max\":1000,\"step\":1,\"retain\":true}";
+    "\"device\":" + deviceConfig + "," +
+    "\"state_class\":\"total_increasing\"}";
 
   let remainingConfig = "{\"name\":\"WebScreen Pomodoro Remaining\"," +
     "\"unique_id\":\"webscreen_pomodoro_remaining\"," +
     "\"state_topic\":\"" + baseTopic + "/remaining/state\"," +
     "\"availability_topic\":\"" + availabilityTopic + "\"," +
     "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
+    "\"device\":" + deviceConfig + "," +
     "\"unit_of_measurement\":\"s\",\"device_class\":\"duration\"," +
-    "\"state_class\":\"measurement\",\"retain\":true}";
+    "\"state_class\":\"measurement\"}";
 
   let endConfig = "{\"name\":\"WebScreen Pomodoro End Time\"," +
     "\"unique_id\":\"webscreen_pomodoro_end_time\"," +
     "\"state_topic\":\"" + baseTopic + "/end_time/state\"," +
     "\"availability_topic\":\"" + availabilityTopic + "\"," +
     "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
-    "\"retain\":true}";
+    "\"device\":" + deviceConfig + "}";
 
   let resetConfig = "{\"name\":\"WebScreen Pomodoro Reset\"," +
     "\"unique_id\":\"webscreen_pomodoro_reset\"," +
-    "\"command_topic\":\"" + baseTopic + "/reset/set\"," +
+    "\"command_topic\":\"" + baseTopic + "/set\"," +
     "\"availability_topic\":\"" + availabilityTopic + "\"," +
     "\"payload_available\":\"online\",\"payload_not_available\":\"offline\"," +
-    "\"payload_press\":\"reset\",\"retain\":true}";
+    "\"payload_press\":\"RESET\"," +
+    "\"device\":" + deviceConfig + "," +
+    "\"retain\":false}";
 
   mqtt_publish("homeassistant/switch/webscreen_pomodoro/config", switchConfig);
-  mqtt_publish("homeassistant/number/webscreen_pomodoro_sessions/config", sessionsConfig);
+  mqtt_publish("homeassistant/sensor/webscreen_pomodoro_sessions/config", sessionsConfig);
   mqtt_publish("homeassistant/sensor/webscreen_pomodoro_remaining/config", remainingConfig);
   mqtt_publish("homeassistant/sensor/webscreen_pomodoro_end_time/config", endConfig);
   mqtt_publish("homeassistant/button/webscreen_pomodoro_reset/config", resetConfig);
@@ -235,6 +246,10 @@ let handle_switch_command = function(payload) {
   }
   if (value === "OFF" || value === "off" || value === "0" || value === "false") {
     if (running) stop_session();
+    return 0;
+  }
+  if (value === "RESET" || value === "reset" || value === "PRESS" || value === "press") {
+    reset_current_session();
     return 0;
   }
   return 0;
@@ -318,6 +333,8 @@ let main_loop = function() {
     mqtt_msg_clear();
     if (typeof topic === "string" && topic !== "") {
       handle_control_message(topic, payload);
+    } else {
+      handle_switch_command(payload);
     }
   }
   return 0;
